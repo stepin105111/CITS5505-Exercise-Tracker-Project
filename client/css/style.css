@@ -55,3 +55,85 @@
     font-size: 18px;
     color: #666;
   }
+
+  /* Registration Form */
+  .container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .form-title {
+      text-align: center;
+      color: #1abc9c;
+      margin-bottom: 30px;
+  }
+
+  .form-group {
+      margin-bottom: 20px;
+  }
+
+  .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+  }
+
+  .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+  }
+
+  .form-group input:focus {
+      border-color: #1abc9c;
+      outline: none;
+  }
+
+  .checkbox-group {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+  }
+
+  .checkbox-group input {
+      margin-right: 10px;
+  }
+
+  .register-btn {
+      background-color: #1abc9c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 12px 20px;
+      width: 100%;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+  }
+
+  .register-btn:hover {
+      background-color: #16a085;
+  }
+
+  .login-link {
+      text-align: center;
+      margin-top: 20px;
+  }
+
+  .login-link a {
+      color: #1abc9c;
+      text-decoration: none;
+      font-weight: bold;
+  }
+
+  .login-link a:hover {
+      text-decoration: underline;
+  }
