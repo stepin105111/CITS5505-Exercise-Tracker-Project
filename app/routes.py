@@ -13,4 +13,7 @@ def register():
 @application.route('/login')
 def login():
     return render_template('login.html')
-    
+
+@application.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
