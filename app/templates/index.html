@@ -1,25 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Fitness Tracker</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
- 
-  <header>
-    <h1>Fitness Tracker</h1>
-    <nav>
-      <a href="{{ url_for('register') }}">Register</a>
-      <a href="{{ url_for('login') }}">Login</a>
-    </nav>
-  </header>
- 
+{% extends 'base.html' %}
+
+{% block title %}Fitness Tracker - Home{% endblock %}
+
+{% block content %}
   <section class="hero">
     <h2>Track. Analyze. Improve.</h2>
     <p>Your fitness journey starts here. Log your workouts, track progress, and stay motivated!</p>
   </section>
- 
-</body>
-</html>
+{% endblock %}
