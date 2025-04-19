@@ -4,33 +4,85 @@
   <title>Register Page</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='register.css') }}">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+  <div class="container">
+    <h1>Create Account</h1>
+    {% if error %}
+    <p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+    {% endif %}
+    <form method="post" id="signup-form">
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Username" required>
+        </div>
+        <div class="input-group">
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+        <div class="input-group">
+            <input type="password" name="password" id="password" placeholder="Password" required>
+        </div>
+        <div class="password-strength">
+            <div class="strength-meter" id="strength-meter"></div>
+            <p id="strength-text">Password strength</p>
+        </div>
+        <div class="input-group">
+            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+        </div>
+        <div class="terms">
+            <input type="checkbox" id="terms" name="terms" required>
+            <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+        </div>
+        <button type="submit"><i class="fas fa-user-plus"></i> Sign Up</button>  
+    </form>
+    <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+</div>
 
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-sm-8">
-      <h2>Register form</h2>
-      <form action="/register" method="POST">
-        <div class="form-group">
-        <label for="username">Username:</label>
-        <input type="text" class="form-control" id="username" placeholder="Enter username" name="username">
-        </div>
-        <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
-        </div>
-        <div class="form-group">
-        <label for="password">Password:</label>
-        <input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
-        </div>
-        <button type="submit" class="btn btn-dark">Submit</button>
-        <a href="/login" class="btn btn-link">Already have an account? Login</a>
-      </form>
-    </div>
+<script>
+  // Password strength checker
+  document.getElementById('password').addEventListener('input', function() {
+      const password = this.value;
+      const meter = document.getElementById('strength-meter');
+      const text = document.getElementById('strength-text');
+      
+      // Simple strength calculation
+      let strength = 0;
+      if (password.length > 6) strength += 25;
+      if (password.match(/[A-Z]/)) strength += 25;
+      if (password.match(/[0-9]/)) strength += 25;
+      if (password.match(/[^A-Za-z0-9]/)) strength += 25;
+      
+      // Update UI
+      meter.style.width = strength + '%';
+      
+      if (strength <= 25) {
+          meter.style.backgroundColor = '#ff4d4d';
+          text.textContent = 'Weak password';
+      } else if (strength <= 50) {
+          meter.style.backgroundColor = '#ffa64d';
+          text.textContent = 'Medium password';
+      } else if (strength <= 75) {
+          meter.style.backgroundColor = '#99cc00';
+          text.textContent = 'Good password';
+      } else {
+          meter.style.backgroundColor = '#00cc44';
+          text.textContent = 'Strong password';
+      }
+  });
 
+  // Password confirmation validation
+  document.getElementById('signup-form').addEventListener('submit', function(e) {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm_password').value;
+      
+      if (password !== confirmPassword) {
+          e.preventDefault();
+          alert('Passwords do not match!');
+      }
+  });
+</script>
 </body>
 </html>
