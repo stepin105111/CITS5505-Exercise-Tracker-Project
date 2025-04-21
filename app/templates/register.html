@@ -30,6 +30,22 @@
         <div class="input-group">
             <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
         </div>
+
+        <div class="input-group">
+            <select name="secret_question" required>
+                <option value="" disabled selected>Select a security question</option>
+                <option value="first_pet">What was the name of your first pet?</option>
+                <option value="birth_city">In what city were you born?</option>
+                <option value="mother_maiden">What is your mother's maiden name?</option>
+                <option value="first_school">What was the name of your first school?</option>
+                <option value="favorite_food">What is your favorite food?</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="secret_answer" placeholder="Answer to security question" required>
+        </div>
+
         <div class="terms">
             <input type="checkbox" id="terms" name="terms" required>
             <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
