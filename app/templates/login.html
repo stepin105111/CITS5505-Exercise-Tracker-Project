@@ -4,29 +4,31 @@
   <title>Login Page</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/login-style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">  
 </head>
 <body>
 
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-sm-8">
-      <h2>Login form</h2>
-      <form action="/login" method="POST">
-        <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" class="form-control" id="email" placeholder="Enter email" name="email">
+  <div class="container">
+    <h1>Welcome Back</h1>
+    {% if error %}
+    <p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+    {% endif %}
+    <form method="post">
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Username" required>
         </div>
-        <div class="form-group">
-        <label for="pwd">Password:</label>
-        <input type="password" class="form-control" id="password" placeholder="Enter password" name="password">
+        <div class="input-group">
+            <input type="password" name="password" id="password" placeholder="Password" required>
         </div>
-        <button type="submit" class="btn btn-dark">Submit</button>
-        <a href="/register" class="btn btn-link">Don't have an account? Register</a>
-      </form>
-    </div>
-
+        <div class="remember-me">
+            <input type="checkbox" id="remember" name="remember">
+            <label for="remember">Remember me</label>
+            <a href="#">Forgot password?</a>
+        </div>
+        <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+    </form>
+    <p class="signup-link">Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p>
+</div>
 </body>
 </html>

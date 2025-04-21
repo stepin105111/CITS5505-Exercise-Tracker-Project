@@ -28,35 +28,59 @@ This is a web-based Exercise Tracker built as part of an Agile Web Development p
 
 ## 🛠️ Tech Stack
 
-- **Frontend**: HTML, CSS, JavaScript
+- **Backend**: Flask (Python), SQLite (SQLAlchemy ORM)
+- **Frontend**: HTML, CSS, Bootstrap, JavaScript
+- **Data Visualization**: Chart.js (optional)
 - **Version Control**: Git & GitHub
 
----
 
 ## 📁 Project Structure
 
-```
-/exercise-tracker
+CITS5505-Exercise-Tracker-Project/
+├── app/
+│   ├── app.py                # Main Flask app and route handling
+│   ├── database.py           # SQLAlchemy setup and DB helper functions
+│   ├── model.py              # (Optional) Models for User, Workout, etc.
+│   ├── forms.py              # (Optional) WTForms (if used)
+│   ├── routes.py             # (Optional) Route separation
+│   ├── static/
+│   │   ├── css/
+│   │   │   ├── login-style.css
+│   │   │   └── style.css
+│   │   └── js/
+│   │       └── (optional JS files)
+│   └── templates/
+│       ├── base.html
+│       ├── index.html
+│       ├── login.html
+│       └── register.html
 │
-├── /client          # Frontend HTML/CSS/JS
-├── /server          # Backend APIs
-├── /docs            # Design mockups and documentation
-├── /data            # Sample exercise data
-├── README.md
-└── .gitignore
-```
+├── instance/
+│   └── database.db           # SQLite DB (auto-generated after init)
+│
+├── env/                      # Python virtual environment (excluded from Git)
+├── requirements.txt          # Python dependencies
+└── README.md                 # Project documentation
 
----
 
 ## 🧪 Setup Instructions
 
 ```bash
-# Clone the repository
+# 1. Clone the repository
 git clone https://github.com/your-org/exercise-tracker.git
+cd exercise-tracker
 
+# 2. Create a virtual environment
+python3 -m venv env
+source env/bin/activate          # Windows: env\Scripts\activate
 
+# 3. Set Flask app (adjust if app.py is outside 'app/' folder)
+export FLASK_APP=app.app         # Windows CMD: set FLASK_APP=app.app
+flask init-db                    # Creates SQLite tables
 
----
+# 4. Launch the development server
+flask run
+
 
 ## 📋 GitHub Workflow
 
