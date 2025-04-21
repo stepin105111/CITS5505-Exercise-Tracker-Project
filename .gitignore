@@ -1,0 +1,5 @@
+instance/dbase.db
+__pycache__/
+*.pyc
+.DS_Store
+py311_env/
