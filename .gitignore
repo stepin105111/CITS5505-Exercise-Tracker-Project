@@ -1,0 +1,11 @@
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignore SQLite database (optional)
+*.db
+
+# Ignore macOS system file
+.DS_Store
