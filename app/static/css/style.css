@@ -11,7 +11,12 @@
     background: #f0f2f5;
     color: #333;
   }
- 
+ .nav-right {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px; 
+  margin-top: -20px;
+}
   header {
     background: #1abc9c;
     padding: 20px 40px;
