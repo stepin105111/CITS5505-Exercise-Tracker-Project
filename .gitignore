@@ -1,5 +1,15 @@
-instance/dbase.db
+# Ignore Python bytecode
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Ignore SQLite database (optional)
+*.db
+instance/dbase.db
+
+# Ignore macOS system file
 .DS_Store
+
+# Ignore virtual environment
 py311_env/
