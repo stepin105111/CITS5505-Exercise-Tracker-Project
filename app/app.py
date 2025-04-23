@@ -3,6 +3,7 @@ from app.database import db, User
 import os
 from datetime import datetime
 from flask.cli import with_appcontext
+from flask_migrate import Migrate
 import click
 
 app = Flask(__name__)
@@ -14,6 +15,7 @@ app.config['SECRET_KEY'] = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = 604800 # 7 days
 
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Command to initialize the database
 @app.cli.command("init-db")
