@@ -11,6 +11,8 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    secret_question = db.Column(db.String(100), nullable=True)
+    secret_answer_hash = db.Column(db.String(256), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
     
@@ -25,6 +27,14 @@ class User(db.Model):
     def check_password(self, password):
         """Check if the provided password matches the hash"""
         return check_password_hash(self.password_hash, password)
+    
+    def set_secret_answer(self, answer):
+        """Set the secret answer hash"""
+        self.secret_answer_hash = generate_password_hash(answer.lower())
+
+    def check_secret_answer(self, answer):
+        """Check if the provided answer matches the hash"""
+        return check_password_hash(self.secret_answer_hash, answer.lower())
     
     def update_last_login(self):
         """Update the last login timestamp"""

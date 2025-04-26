@@ -6,6 +6,10 @@ __pycache__/
 
 # Ignore SQLite database (optional)
 *.db
+instance/dbase.db
 
 # Ignore macOS system file
 .DS_Store
+
+# Ignore virtual environment
+py311_env/
