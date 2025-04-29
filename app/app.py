@@ -211,5 +211,31 @@ def logout():
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('login'))
 
+@app.route('/workout-plan')
+def workout_plan():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('workout_plan.html')
+
+
+@app.route('/input', methods=['GET', 'POST'])
+def input_page():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('input.html')
+
+@app.route('/visualise')
+def visualise_page():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('visualise.html')
+
+@app.route('/share')
+def share_page():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    return render_template('share.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
