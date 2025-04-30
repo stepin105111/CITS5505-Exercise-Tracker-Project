@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from app.database import db, User
 import os
 from datetime import datetime
@@ -230,11 +230,153 @@ def visualise_page():
         return redirect(url_for('login'))
     return render_template('visualise.html')
 
+# Friend search and add functionality
+@app.route('/search-users', methods=['GET'])
+def search_users():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    query = request.args.get('query', '')
+    
+    if not query or len(query) < 2:
+        return jsonify({'users': []})
+    
+    # Find users with usernames containing the query
+    current_user = User.query.filter_by(username=session['username']).first()
+    users = User.query.filter(
+        User.username.like(f'%{query}%'), 
+        User.id != current_user.id
+    ).limit(10).all()
+    
+    # Format results with friendship status
+    results = []
+    for user in users:
+        results.append({
+            'id': user.id,
+            'username': user.username,
+            'is_friend': current_user.is_friend(user)
+        })
+    
+    return jsonify({'users': results})
+
+@app.route('/add-friend', methods=['POST'])
+def add_friend():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    friend_username = request.json.get('username')
+    
+    if not friend_username:
+        return jsonify({'error': 'No username provided'}), 400
+    
+    current_user = User.query.filter_by(username=session['username']).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    
+    if not friend:
+        return jsonify({'error': 'User not found'}), 404
+    
+    if current_user.id == friend.id:
+        return jsonify({'error': 'Cannot add yourself as a friend'}), 400
+    
+    if current_user.is_friend(friend):
+        return jsonify({'error': 'Already friends with this user'}), 400
+    
+    try:
+        success = current_user.add_friend(friend)
+        db.session.commit()
+        
+        if success:
+            return jsonify({'message': f'Added {friend.username} as a friend'})
+        else:
+            return jsonify({'error': 'Failed to add friend'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error adding friend: {str(e)}'}), 500
+    
+@app.route('/remove-friend', methods=['POST'])
+def remove_friend():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    friend_username = request.json.get('username')
+    
+    if not friend_username:
+        return jsonify({'error': 'No username provided'}), 400
+    
+    current_user = User.query.filter_by(username=session['username']).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    
+    if not friend:
+        return jsonify({'error': 'User not found'}), 404
+    
+    if not current_user.is_friend(friend):
+        return jsonify({'error': 'Not friends with this user'}), 400
+    
+    try:
+        success = current_user.remove_friend(friend)
+        db.session.commit()
+        
+        if success:
+            return jsonify({'message': f'Removed {friend.username} from friends'})
+        else:
+            return jsonify({'error': 'Failed to remove friend'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error removing friend: {str(e)}'}), 500
+
+@app.route('/friends')
+def get_friends():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    current_user = User.query.filter_by(username=session['username']).first()
+    friend_list = current_user.get_all_friends()
+    
+    friends = []
+    for friend in friend_list:
+        friends.append({
+            'id': friend.id,
+            'username': friend.username,
+            'email': friend.email,
+            'last_login': friend.last_login.strftime('%Y-%m-%d %H:%M:%S') if friend.last_login else None
+        })
+    
+    return jsonify({'friends': friends})
+
 @app.route('/share')
 def share_page():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('share.html')
+    
+    current_user = User.query.filter_by(username=session['username']).first()
+    friends = current_user.get_all_friends()
+    
+    # Dummy workout data for each friend (since we don't have real data yet)
+    mock_activities = [
+        {'type': 'Strength Training', 'calories': 550, 'duration': 60},
+        {'type': 'Running', 'calories': 430, 'duration': 45},
+        {'type': 'Yoga', 'calories': 280, 'duration': 50},
+        {'type': 'Swimming', 'calories': 400, 'duration': 40},
+        {'type': 'Cycling', 'calories': 520, 'duration': 55}
+    ]
+    
+    # Assign random activity to each friend
+    import random
+    from datetime import timedelta
+    
+    friends_data = []
+    for i, friend in enumerate(friends):
+        days_ago = i + 1
+        activity_index = i % len(mock_activities)
+        friends_data.append({
+            'username': friend.username,
+            'activity': mock_activities[activity_index]['type'],
+            'calories': mock_activities[activity_index]['calories'],
+            'duration': mock_activities[activity_index]['duration'],
+            'shared_days_ago': days_ago
+        })
+
+    return render_template('share.html', user=current_user, friends=friends_data)
 
 
 if __name__ == '__main__':
