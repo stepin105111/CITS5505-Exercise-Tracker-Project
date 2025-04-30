@@ -1,60 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Register Page</title>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body>
-  <div class="container">
-    <h1>Create Account</h1>
-    {% if error %}
-    <p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-    {% endif %}
-    <form method="post" id="signup-form">
-        <div class="input-group">
-            <input type="text" name="username" placeholder="Username" required>
-        </div>
-        <div class="input-group">
-            <input type="email" name="email" placeholder="Email" required>
-        </div>
-        <div class="input-group">
-            <input type="password" name="password" id="password" placeholder="Password" required>
-        </div>
-        <div class="password-strength">
-            <div class="strength-meter" id="strength-meter"></div>
-            <p id="strength-text">Password strength</p>
-        </div>
-        <div class="input-group">
-            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
-        </div>
+{% extends "base.html" %}
 
-        <div class="input-group">
-            <select name="secret_question" required>
-                <option value="" disabled selected>Select a security question</option>
-                <option value="first_pet">What was the name of your first pet?</option>
-                <option value="birth_city">In what city were you born?</option>
-                <option value="mother_maiden">What is your mother's maiden name?</option>
-                <option value="first_school">What was the name of your first school?</option>
-                <option value="favorite_food">What is your favorite food?</option>
-            </select>
-        </div>
+{% block title %}Register - Fitness Tracker{% endblock %}
 
-        <div class="input-group">
-            <input type="text" name="secret_answer" placeholder="Answer to security question" required>
-        </div>
+{% block content %}
+<h1>Create Account</h1>
+{% if error %}
+<p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+{% endif %}
+<form method="post" id="signup-form">
+    <div class="input-group">
+        <input type="text" name="username" placeholder="Username" required>
+    </div>
+    <div class="input-group">
+        <input type="email" name="email" placeholder="Email" required>
+    </div>
+    <div class="input-group">
+        <input type="password" name="password" id="password" placeholder="Password" required>
+    </div>
+    <div class="password-strength">
+        <div class="strength-meter" id="strength-meter"></div>
+        <p id="strength-text">Password strength</p>
+    </div>
+    <div class="input-group">
+        <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+    </div>
 
-        <div class="terms">
-            <input type="checkbox" id="terms" name="terms" required>
-            <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
-        </div>
-        <button type="submit"><i class="fas fa-user-plus"></i> Sign Up</button>  
-    </form>
-    <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
-</div>
+    <div class="input-group">
+        <select name="secret_question" required>
+            <option value="" disabled selected>Select a security question</option>
+            <option value="first_pet">What was the name of your first pet?</option>
+            <option value="birth_city">In what city were you born?</option>
+            <option value="mother_maiden">What is your mother's maiden name?</option>
+            <option value="first_school">What was the name of your first school?</option>
+            <option value="favorite_food">What is your favorite food?</option>
+        </select>
+    </div>
 
+    <div class="input-group">
+        <input type="text" name="secret_answer" placeholder="Answer to security question" required>
+    </div>
+
+    <div class="terms">
+        <input type="checkbox" id="terms" name="terms" required>
+        <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+    </div>
+    <button type="submit"><i class="fas fa-user-plus"></i> Sign Up</button>  
+</form>
+<p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+{% endblock %}
+
+{% block scripts_body %}
 <script>
   // Password strength checker
   document.getElementById('password').addEventListener('input', function() {
@@ -98,5 +93,4 @@
       }
   });
   </script>
-</body>
-</html>
+{% endblock %}
