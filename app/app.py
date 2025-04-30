@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-from app.database import db, User
 import os
 from datetime import datetime
 from flask.cli import with_appcontext
@@ -14,8 +13,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = 604800 # 7 days
 
+
 db.init_app(app)
 migrate = Migrate(app, db)
+
 
 # Command to initialize the database
 @app.cli.command("init-db")
@@ -94,6 +95,14 @@ def login():
             return render_template('login.html', error='Invalid username or password')
 
     return render_template('login.html', error=None)
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+@app.route('/home')
+def home():
+    return render_template('index.html')
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
