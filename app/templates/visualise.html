@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Visualise Progress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap 4.6 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.4/dist/jquery.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      background-color: #f0f4f8;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar-custom {
+      background-color: #007bff;
+    }
+
+    .navbar-brand, .btn-logout {
+      color: white !important;
+      font-weight: 600;
+    }
+
+    h2, h5 {
+      font-weight: 600;
+    }
+
+    .card {
+      border-radius: 15px;
+      border: none;
+    }
+
+    .card-title {
+      color: #007bff;
+    }
+
+    .progress-bar {
+      font-weight: bold;
+    }
+
+    .lead {
+      color: #555;
+    }
+
+    canvas {
+      max-height: 240px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom shadow-sm">
+  <div class="container">
+    <a class="navbar-brand" href="#">Fitness Tracker</a>
+    <div class="ml-auto">
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Content -->
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h2 class="mb-3">📊 Your Workout Progress</h2>
+    <p class="lead">Track your calories, time, and workout type insights</p>
+  </div>
+
+  <div class="row">
+    <!-- Line Chart -->
+    <div class="col-md-6 mb-4">
+      <div class="card p-4 shadow-sm">
+        <h5 class="card-title mb-3">🔥 Calories Burnt Over the Week</h5>
+        <canvas id="caloriesChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-md-6 mb-4">
+      <div class="card p-4 shadow-sm">
+        <h5 class="card-title mb-3">🏋️ Workout Type Breakdown</h5>
+        <canvas id="typeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- Goal Progress -->
+  <div class="card p-4 shadow-sm mt-4">
+    <h5 class="card-title mb-4">🎯 Weekly Goal Progress</h5>
+
+    <p class="mb-1">Calories Burnt: <strong>850 / 2000 kcal</strong></p>
+    <div class="progress mb-4" style="height: 24px;">
+      <div class="progress-bar bg-success" style="width: 42%;">42%</div>
+    </div>
+
+    <p class="mb-1">Workout Time: <strong>120 / 300 mins</strong></p>
+    <div class="progress" style="height: 24px;">
+      <div class="progress-bar bg-info" style="width: 40%;">40%</div>
+    </div>
+  </div>
+</div>
+
+<!-- Chart Setup -->
+<script>
+  // Line Chart - Calories
+  new Chart(document.getElementById('caloriesChart'), {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Calories Burnt',
+        data: [300, 250, 400, 350, 100, 200, 150],
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  // Pie Chart - Workout Types
+  new Chart(document.getElementById('typeChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Cardio', 'Strength', 'Yoga'],
+      datasets: [{
+        data: [50, 30, 20],
+        backgroundColor: ['#ff6384', '#36a2eb', '#ffce56']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+</script>
+
+</body>
+</html>

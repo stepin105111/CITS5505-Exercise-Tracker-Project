@@ -2,15 +2,65 @@
 
 {% block title %}Dashboard - Fitness Tracker{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block body_class %}dashboard-page{% endblock %}
+
 {% block content %}
-<div class="dashboard-container">
-    <h2>user dashboard</h2>
-    <div class="user-info">
-        <p><b>UserName: </b> {{user.username }}</p>
-        <p><b>Email: </b> {{user.email }}</p>
+<div class="container mt-5">
+  <div class="row">
+    
+    <!-- Main Content -->
+    <div class="col-md-8">
+      <div class="text-center mb-4">
+        <h2>Welcome, {{ user.username }} 👋</h2>
+        <p class="lead text-muted">Here’s your current fitness summary:</p>
+      </div>
+
+      <div class="card p-4 shadow-sm mb-4">
+        <h5 class="mb-3">📋 Your Details</h5>
+        <p><strong>Username:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-6 mb-4">
+          <div class="card bg-light p-3 shadow-sm">
+            <h5>🎯 Weekly Goals</h5>
+            <p>Calories to Burn: <strong>2000 kcal</strong></p>
+            <p>Workout Time: <strong>300 mins</strong></p>
+            <a href="{{ url_for('workout_plan') }}" class="btn btn-sm btn-outline-primary">Edit Plan</a>
+          </div>
+        </div>
+
+        <div class="col-sm-6 mb-4">
+          <div class="card bg-light p-3 shadow-sm">
+            <h5>📊 Your Progress</h5>
+            <p>Calories Burnt: <strong>850 kcal</strong></p>
+            <p>Workout Time: <strong>120 mins</strong></p>
+            <p>Workouts: <strong>5</strong> (Cardio: 3, Strength: 2)</p>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Additional dashboard content can go here -->
+    <!-- Sidebar -->
+    <div class="col-md-4">
+      <div class="card p-4 shadow-sm">
+        <h5 class="mb-3 text-center">🚀 Quick Actions</h5>
+        <div class="text-center">
+          <a href="{{ url_for('workout_plan') }}" class="btn btn-main btn-block mb-2">New Week Plan</a>
+          <a href="{{ url_for('input_page') }}" class="btn btn-main btn-block mb-2">Enter Workout Details</a>
+          <a href="{{ url_for('visualise_page') }}" class="btn btn-main btn-block mb-2">View Visualisation</a>
+          <a href="{{ url_for('share_page') }}" class="btn btn-main btn-block mb-2">Share Progress</a>
+          <a href="{{ url_for('logout') }}" class="btn btn-logout btn-block">Logout</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 {% endblock %}
 

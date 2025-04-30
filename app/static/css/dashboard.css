@@ -1,0 +1,36 @@
+.dashboard-page {
+    background: linear-gradient(to right, #e3f2fd, #ffffff);
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .dashboard-page h2,
+  .dashboard-page h5 {
+    font-weight: 600;
+  }
+  
+  .dashboard-page .card {
+    border-radius: 15px;
+    border: none;
+  }
+  
+  .dashboard-page .btn-main {
+    background-color: #007bff;
+    color: white;
+    font-weight: 500;
+  }
+  
+  .dashboard-page .btn-main:hover {
+    background-color: #0056b3;
+    color: white;
+  }
+  
+  .dashboard-page .btn-logout {
+    background-color: #343a40;
+    color: white;
+    font-weight: 500;
+  }
+  
+  .dashboard-page .btn-logout:hover {
+    background-color: #1d2124;
+    color: white;
+  }
