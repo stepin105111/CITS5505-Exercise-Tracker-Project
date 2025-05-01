@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
+from app.database import db, User
 from datetime import datetime
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
