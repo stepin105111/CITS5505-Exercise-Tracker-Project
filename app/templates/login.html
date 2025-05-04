@@ -3,27 +3,52 @@
 {% block title %}Login - Fitness Tracker{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{{ url_for('static', filename='css/login-style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 {% endblock %}
 
 {% block content %}
-<h1>Welcome Back</h1>
-{% if error %}
-<p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
-{% endif %}
-<form method="post">
-    <div class="input-group">
-        <input type="text" name="username" placeholder="Username" required>
-    </div>
-    <div class="input-group">
-        <input type="password" name="password" id="password" placeholder="Password" required>
-    </div>
-    <div class="remember-me">
-        <input type="checkbox" id="remember" name="remember">
-        <label for="remember">Remember me</label>
-        <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
-    </div>
-    <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
-</form>
-<p class="signup-link">Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p>
+<div class="login-register-wrapper">
+    <div class="container">
+        <h1>Welcome Back</h1>
+        {% if error %}
+        <p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+        {% endif %}
+        <form method="post">
+            <div class="input-group">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility()"></i>
+            </div>
+            <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember">
+                <label for="remember">Remember me</label>
+                <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
+            </div>
+            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </form>
+        <p class="signup-link">Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p>
+    </div>>
+</div>
+
+<script>
+    function togglePasswordVisibility() {
+        const passwordField = document.getElementById('password');
+        const toggleIcon = document.querySelector('.toggle-password');
+
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordField.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+</script>
+
+
 {% endblock %}
