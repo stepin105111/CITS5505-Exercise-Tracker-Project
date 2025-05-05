@@ -7,7 +7,7 @@
 }
 
 :root {
-  --primary-color: #4e54c8;
+  --primary-color: #16a085;
   --secondary-color: #8f94fb;
   --text-color: #333;
   --light-bg: rgba(255, 255, 255, 0.95);
@@ -54,7 +54,7 @@ body::before {
   gap: 15px;
 }
 
-header {
+.page-header {
   padding: 20px 40px;
   display: flex;
   justify-content: space-between;
@@ -65,11 +65,10 @@ header {
   right: 0;
 }
 
-header h1 {
-  color: rgb(252, 252, 252);
+.page-header h1 {
+  color: white;
   font-size: 24px;
 }
-
 nav a {
   text-decoration: none;
   margin-left: 20px;
