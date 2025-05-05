@@ -1,66 +1,163 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - Fitness Tracker{% endblock %}
+{% block title %}Dashboard | Fitness Tracker{% endblock %}
+
+{% block header %}
+<!-- Empty to suppress base.html header -->
+{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
 
 {% block body_class %}dashboard-page{% endblock %}
-
 {% block content %}
-<div class="container mt-5">
-  <div class="row">
-    
-    <!-- Main Content -->
-    <div class="col-md-8">
-      <div class="text-center mb-4">
-        <h2>Welcome, {{ user.username }} 👋</h2>
-        <p class="lead text-muted">Here’s your current fitness summary:</p>
-      </div>
-
-      <div class="card p-4 shadow-sm mb-4">
-        <h5 class="mb-3">📋 Your Details</h5>
-        <p><strong>Username:</strong> {{ user.username }}</p>
-        <p><strong>Email:</strong> {{ user.email }}</p>
-      </div>
-
-      <div class="row">
-        <div class="col-sm-6 mb-4">
-          <div class="card bg-light p-3 shadow-sm">
-            <h5>🎯 Weekly Goals</h5>
-            <p>Calories to Burn: <strong>2000 kcal</strong></p>
-            <p>Workout Time: <strong>300 mins</strong></p>
-            <a href="{{ url_for('workout_plan') }}" class="btn btn-sm btn-outline-primary">Edit Plan</a>
-          </div>
-        </div>
-
-        <div class="col-sm-6 mb-4">
-          <div class="card bg-light p-3 shadow-sm">
-            <h5>📊 Your Progress</h5>
-            <p>Calories Burnt: <strong>850 kcal</strong></p>
-            <p>Workout Time: <strong>120 mins</strong></p>
-            <p>Workouts: <strong>5</strong> (Cardio: 3, Strength: 2)</p>
-          </div>
-        </div>
+<div class="app-container">
+  <aside class="sidebar">
+    <div class="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </div>
+    <div class="sidebar-header">
+      <img src="static/images/Fitness logo.jpg" alt="Profile">
+      <div class="user-info">
+        <h3>{{ user.username }}</h3>
+        <p>Fitness Enthusiast</p>
       </div>
     </div>
-
-    <!-- Sidebar -->
-    <div class="col-md-4">
-      <div class="card p-4 shadow-sm">
-        <h5 class="mb-3 text-center">🚀 Quick Actions</h5>
-        <div class="text-center">
-          <a href="{{ url_for('workout_plan') }}" class="btn btn-main btn-block mb-2">New Week Plan</a>
-          <a href="{{ url_for('input_page') }}" class="btn btn-main btn-block mb-2">Enter Workout Details</a>
-          <a href="{{ url_for('visualise_page') }}" class="btn btn-main btn-block mb-2">View Visualisation</a>
-          <a href="{{ url_for('share_page') }}" class="btn btn-main btn-block mb-2">Share Progress</a>
-          <a href="{{ url_for('logout') }}" class="btn btn-logout btn-block">Logout</a>
+    <nav class="menu">
+      <a href="#" class="menu-item active" data-target="dashboard-section">
+        <i class="fas fa-home"></i> <span>Dashboard</span>
+      </a>
+      <a href="#" class="menu-item" data-target="workout-plan-section">
+        <i class="fas fa-calendar-alt"></i> <span>Workout Plan</span>
+      </a>
+      <a href="#" class="menu-item" data-target="workout-statistic-section">
+        <i class="fas fa-chart-line"></i> <span>Workout Statistics</span>
+      </a>
+      <a href="#" class="menu-item" data-target="schedule-section">
+        <i class="fas fa-calendar-week"></i> <span>Schedule</span>
+      </a>
+      <a href="#" class="menu-item" data-target="share-section">
+        <i class="fas fa-share-alt"></i> <span>Share Data</span>
+      </a>
+      <a href="#" class="menu-item settings-btn" data-target="settings-section">
+        <i class="fas fa-user-circle fa-lg"></i> <span>Settings</span>
+      </a>
+      <a href="{{ url_for('logout') }}" class="menu-item logout-btn">
+        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+      </a>
+    </nav>
+  </aside>
+  <main class="main-content">
+    <header class="dashboard-header">
+      <h1>Welcome, {{ user.username }}!</h1>
+    </header>
+    <section id="dashboard-section" class="content-section active">
+      <div class="statistics-container">
+        <div class="stats-card">
+          <div class="stats-icon blue">
+            <i class="fas fa-dumbbell"></i>
+          </div>
+          <div class="stats-info">
+            <h3>Workouts Days</h3>
+            <p>5 / 7</p>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-icon orange">
+            <i class="fas fa-fire-alt"></i>
+          </div>
+          <div class="stats-info">
+            <h3>Calories Burned</h3>
+            <p>500</p>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-icon green">
+            <i class="fas fa-running"></i>
+          </div>
+          <div class="stats-info">
+            <h3>Distance Covered</h3>
+            <p>10.5 km</p>
+          </div>
+        </div>
+        <div class="stats-card">
+          <div class="stats-icon red">
+            <i class="fas fa-stopwatch"></i>
+          </div>
+          <div class="stats-info">
+            <h3>Workout Time</h3>
+            <p>1.5 hrs</p>
+          </div>
         </div>
       </div>
-    </div>
 
-  </div>
+      <h2>WORKOUT PLANS</h2>
+      <div class="workout-plans">
+        {% for plan in workout_plans %}
+        <div class="workout-plan">
+          <h3>{{ plan.title }}</h3>
+          <p>{{ plan.description }}</p>
+
+          <p>Progress: {{ plan.progress }}%</p>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+    <section id="workout-plan-section" class="content-section">
+      <h2>CREATE WORKOUT PLAN</h2>
+      <div class="plan-creator">
+
+        <!-- Plan Name -->
+        <div class="form-group">
+          <label for="plan-name">Plan Name</label>
+          <input type="text" id="plan-name" class="form-control" placeholder="e.g., Summer Body Transformation">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+          <label for="plan-description">Description</label>
+          <textarea id="plan-description" class="form-control" rows="3"
+            placeholder="Describe your workout plan goals..."></textarea>
+        </div>
+
+        <!-- Duration -->
+        <div class="form-group">
+          <label for="plan-duration">Duration (weeks)</label>
+          <input type="number" id="plan-duration" class="form-control" min="1" max="52" value="8">
+        </div>
+
+        <!-- Submit Button -->
+        <button class="btn btn-primary">Create Plan</button>
+      </div>
+
+      <div id="workout-plan-container"></div>
+    </section>
+    <section id="workout-statistic-section" class="content-section">
+      <h2>WORKOUT STATISTICS</h2>
+      <div class="chart-container">
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Workout Activities</h3>
+          </div>
+          <canvas id="activitiesChart"></canvas>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header">
+            <h3>Weekly Progression</h3>
+          </div>
+          <canvas id="progressionChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+
+  </main>
 </div>
 {% endblock %}
 
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+<script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+{% endblock %}
