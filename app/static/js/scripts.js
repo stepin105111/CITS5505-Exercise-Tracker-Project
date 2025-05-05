@@ -25,3 +25,20 @@ document.querySelectorAll('.menu-item').forEach(item => {
         document.getElementById(targetSection).classList.add('active');
     });
 });
+
+// Day selector for workout plan
+const dayBtns = document.querySelectorAll('.days-selector .btn');
+if (dayBtns.length) {
+    dayBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            this.classList.toggle('btn-primary');
+            if (this.classList.contains('btn-primary')) {
+                this.style.background = '#3498db';
+                this.style.color = 'white';
+            } else {
+                this.style.background = '#f0f4f8';
+                this.style.color = '#333';
+            }
+        });
+    });
+}
