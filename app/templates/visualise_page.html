@@ -4,6 +4,39 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  body {
+    background-color: #f0f4f8;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .navbar-custom {
+    background-color: #007bff;
+  }
+  .navbar-brand, .btn-logout {
+    color: white !important;
+    font-weight: 600;
+  }
+  h2, h5 {
+    font-weight: 600;
+  }
+  .card {
+    border-radius: 15px;
+    border: none;
+  }
+  .card-title {
+    color: #007bff;
+  }
+  .progress-bar {
+    font-weight: bold;
+  }
+  .lead {
+    color: #555;
+  }
+  canvas {
+    max-height: 300px;
+    width: 100%;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -71,9 +104,9 @@
   new Chart(document.getElementById('typeChart'), {
     type: 'pie',
     data: {
-      labels: {{ workout_types.keys()|list }},
+      labels: {{ workout_types.keys()| list | tojson }},
       datasets: [{
-        data: {{ workout_types.values()|list }},
+        data: {{ workout_types.values()| list | tojson }},
         backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#8e44ad', '#2ecc71']
       }]
     },
