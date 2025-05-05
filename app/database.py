@@ -15,7 +15,8 @@ class User(db.Model):
     secret_answer_hash = db.Column(db.String(256), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
-    
+
+
     
     def __repr__(self):
         return f'<User {self.username}>'
@@ -50,3 +51,27 @@ class User(db.Model):
             'created_at': self.created_at,
             'last_login': self.last_login
         }
+    
+class WeeklyPlan(db.Model):
+    __tablename__ = 'weekly_plans'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    calorie_goal = db.Column(db.Integer, nullable=False)
+    time_goal = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='weekly_plans')
+
+
+class Workout(db.Model):
+    __tablename__ = 'workouts'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    workout_type = db.Column(db.String(100), nullable=False)
+    calories_burnt = db.Column(db.Integer, nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref='workouts')
+
+

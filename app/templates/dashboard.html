@@ -25,26 +25,29 @@
         <p><strong>Email:</strong> {{ user.email }}</p>
       </div>
 
-      <div class="row">
-        <div class="col-sm-6 mb-4">
-          <div class="card bg-light p-3 shadow-sm">
-            <h5>🎯 Weekly Goals</h5>
-            <p>Calories to Burn: <strong>2000 kcal</strong></p>
-            <p>Workout Time: <strong>300 mins</strong></p>
-            <a href="{{ url_for('workout_plan') }}" class="btn btn-sm btn-outline-primary">Edit Plan</a>
-          </div>
-        </div>
-
-        <div class="col-sm-6 mb-4">
-          <div class="card bg-light p-3 shadow-sm">
-            <h5>📊 Your Progress</h5>
-            <p>Calories Burnt: <strong>850 kcal</strong></p>
-            <p>Workout Time: <strong>120 mins</strong></p>
-            <p>Workouts: <strong>5</strong> (Cardio: 3, Strength: 2)</p>
-          </div>
+      <div class="col-sm-6 mb-4">
+        <div class="card bg-light p-3 shadow-sm">
+          <h5>🎯 Weekly Goals</h5>
+          {% if weekly_plan %}
+            <p>Calories to Burn: <strong>{{ weekly_plan.calorie_goal }} kcal</strong></p>
+            <p>Workout Time: <strong>{{ weekly_plan.time_goal }} mins</strong></p>
+          {% else %}
+            <p class="text-muted">No plan set yet. Set your weekly goals below.</p>
+          {% endif %}
+          <a href="{{ url_for('workout_plan') }}" class="btn btn-sm btn-outline-primary">Edit Plan</a>
         </div>
       </div>
-    </div>
+      
+
+      <div class="col-md-6 mb-4">
+        <div class="card p-4 bg-light shadow-sm h-100">
+          <h5 class="mb-3">📊 Your Progress</h5>
+          <p>Calories Burnt: <strong>{{ total_calories }} kcal</strong></p>
+          <p>Workout Time: <strong>{{ total_duration }} mins</strong></p>
+          <p>Workouts: <strong>{{ workout_names }}</strong></p>
+        </div>
+      </div>
+      
 
     <!-- Sidebar -->
     <div class="col-md-4">
@@ -63,4 +66,3 @@
   </div>
 </div>
 {% endblock %}
-

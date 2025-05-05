@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Log Workout{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow p-4">
+        <h3 class="mb-4 text-center text-info">💪 Log New Workout</h3>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="post" action="{{ url_for('input_page') }}">
+          <div class="form-group">
+            <label for="type">Workout Type</label>
+            <input type="text" class="form-control" id="type" name="type" placeholder="e.g. Cardio, Strength" required>
+          </div>
+
+          <div class="form-group">
+            <label for="calories">Calories Burnt</label>
+            <input type="number" class="form-control" id="calories" name="calories" placeholder="e.g. 300" required>
+          </div>
+
+          <div class="form-group">
+            <label for="duration">Duration (minutes)</label>
+            <input type="number" class="form-control" id="duration" name="duration" placeholder="e.g. 45" required>
+          </div>
+
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-success btn-lg">Submit Workout</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

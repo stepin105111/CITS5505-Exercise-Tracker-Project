@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Visualise Progress{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="text-center mb-5">
+    <h2 class="mb-3">📊 Your Workout Progress</h2>
+    <p class="lead">Track your calories, time, and workout type insights</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card p-4 shadow-sm">
+        <h5 class="card-title mb-3">🔥 Calories Burnt Over the Week</h5>
+        <canvas id="caloriesChart"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6 mb-4">
+      <div class="card p-4 shadow-sm">
+        <h5 class="card-title mb-3">🏋️ Workout Type Breakdown</h5>
+        <canvas id="typeChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="card p-4 shadow-sm mt-4">
+    <h5 class="card-title mb-4">🎯 Weekly Goal Progress</h5>
+
+    <p class="mb-1">Calories Burnt: <strong>{{ total_calories }} / {{ weekly_plan.calorie_goal if weekly_plan else '—' }} kcal</strong></p>
+    <div class="progress mb-4" style="height: 24px;">
+      <div class="progress-bar bg-success" style="width: {{ (total_calories / weekly_plan.calorie_goal * 100) if weekly_plan else 0 }}%;">
+        {{ (total_calories / weekly_plan.calorie_goal * 100)|round(0) if weekly_plan else 0 }}%
+      </div>
+    </div>
+
+    <p class="mb-1">Workout Time: <strong>{{ total_minutes }} / {{ weekly_plan.time_goal if weekly_plan else '—' }} mins</strong></p>
+    <div class="progress" style="height: 24px;">
+      <div class="progress-bar bg-info" style="width: {{ (total_minutes / weekly_plan.time_goal * 100) if weekly_plan else 0 }}%;">
+        {{ (total_minutes / weekly_plan.time_goal * 100)|round(0) if weekly_plan else 0 }}%
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  new Chart(document.getElementById('caloriesChart'), {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Calories Burnt',
+        data: {{ calories_per_day }},
+        borderColor: '#007bff',
+        backgroundColor: 'rgba(0, 123, 255, 0.1)',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  new Chart(document.getElementById('typeChart'), {
+    type: 'pie',
+    data: {
+      labels: {{ workout_types.keys()|list }},
+      datasets: [{
+        data: {{ workout_types.values()|list }},
+        backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#8e44ad', '#2ecc71']
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+</script>
+{% endblock %}

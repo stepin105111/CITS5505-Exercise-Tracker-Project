@@ -4,6 +4,8 @@ from app.database import db, User
 from datetime import datetime
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
+from app.database import WeeklyPlan 
+from app.database import WeeklyPlan, Workout
 import click
 
 app = Flask(__name__)
@@ -200,20 +202,37 @@ def reset_password():
     else:
         return render_template('forgot_password.html', step='username', error='User not found')
 
+
 @app.route('/dashboard')
 def dashboard():
-   if 'username' not in session:
+    if 'username' not in session:
         return redirect(url_for('login'))
 
-   user = User.query.filter_by(username=session['username']).first()
-   if not user:
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
         session.clear()
         return redirect(url_for('login'))
 
-   return render_template(
-    'dashboard.html', 
-    user=user,
-    username=user.username)
+    # Fetch latest weekly plan if exists
+    latest_plan = WeeklyPlan.query.filter_by(user_id=user.id).order_by(WeeklyPlan.created_at.desc()).first()
+
+    # Fetch all workout entries
+    workouts = Workout.query.filter_by(user_id=user.id).all()
+    total_calories = sum(w.calories_burnt for w in workouts)
+    total_duration = sum(w.duration for w in workouts)
+    workout_names = ", ".join(w.workout_type for w in workouts) if workouts else "No workouts logged yet"
+
+    return render_template(
+        'dashboard.html',
+        user=user,
+        username=user.username,
+        weekly_plan=latest_plan,
+        total_calories=total_calories,
+        total_duration=total_duration,
+        workout_names=workout_names
+    )
+
+
 
 @app.route('/logout')
 def logout():
@@ -221,24 +240,101 @@ def logout():
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('login'))
 
-@app.route('/workout-plan')
+@app.route('/workout-plan', methods=['GET', 'POST'])
 def workout_plan():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('workout_plan.html')
+
+    user = User.query.filter_by(username=session['username']).first()
+
+    if request.method == 'POST':
+        calorie_goal = request.form.get('calorie_goal', type=int)
+        time_goal = request.form.get('time_goal', type=int)
+
+        if calorie_goal and time_goal:
+            new_plan = WeeklyPlan(user_id=user.id, calorie_goal=calorie_goal, time_goal=time_goal)
+            db.session.add(new_plan)
+            db.session.commit()
+            flash('✅ Weekly workout plan saved!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('❌ Please enter valid numbers for both fields.', 'danger')
+
+    return render_template('workout_plan.html', user=user)
+
 
 
 @app.route('/input', methods=['GET', 'POST'])
 def input_page():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('input.html')
+
+    user = User.query.filter_by(username=session['username']).first()
+
+    if request.method == 'POST':
+        workout_type = request.form.get('type')
+        calories = request.form.get('calories', type=int)
+        duration = request.form.get('duration', type=int)
+
+        if workout_type and calories and duration:
+            new_workout = Workout(
+                user_id=user.id,
+                workout_type=workout_type,
+                calories_burnt=calories,
+                duration=duration
+            )
+            db.session.add(new_workout)
+            db.session.commit()
+            flash('✅ Workout logged successfully!', 'success')
+            return redirect(url_for('dashboard'))
+        else:
+            flash('❌ All fields are required and must be valid.', 'danger')
+
+    return render_template('input_page.html', user=user)
+
 
 @app.route('/visualise')
 def visualise_page():
     if 'username' not in session:
         return redirect(url_for('login'))
-    return render_template('visualise.html')
+
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
+        session.clear()
+        return redirect(url_for('login'))
+
+    # Fetch latest weekly plan
+    latest_plan = WeeklyPlan.query.filter_by(user_id=user.id).order_by(WeeklyPlan.created_at.desc()).first()
+
+    # Get all workouts
+    workouts = Workout.query.filter_by(user_id=user.id).order_by(Workout.created_at.asc()).all()
+
+    # Prepare data
+    calories_per_day = [0] * 7  # Monday = 0
+    workout_types = {}
+
+    for workout in workouts:
+        day_index = workout.created_at.weekday()  # 0 = Monday
+        calories_per_day[day_index] += workout.calories_burnt
+
+        if workout.workout_type in workout_types:
+            workout_types[workout.workout_type] += 1
+        else:
+            workout_types[workout.workout_type] = 1
+
+    total_calories = sum(w.calories_burnt for w in workouts)
+    total_minutes = sum(w.duration for w in workouts)
+
+    return render_template(
+        'visualise_page.html',
+        user=user,
+        weekly_plan=latest_plan,
+        calories_per_day=calories_per_day,
+        workout_types=workout_types,
+        total_calories=total_calories,
+        total_minutes=total_minutes
+    )
+
 
 @app.route('/share')
 def share_page():
