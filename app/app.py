@@ -210,6 +210,8 @@ def dashboard():
         session.clear()
         return redirect(url_for('login'))
     
+    weekly_plans = WeeklyPlan.query.filter_by(user_id=user.id).all()
+
     workout_logs = WorkoutLog.query.filter_by(user_id=user.id).all()
 
 
@@ -230,12 +232,34 @@ def dashboard():
     return render_template(
         'dashboard.html',
         user=user,
+        weekly_plans=weekly_plans,
         workout_logs=workout_logs,
         total_duration=total_duration,
         total_calories=total_calories,
         total_workout_days=total_workout_days,
         distance_km=distance_km
     )
+
+@app.route('/create_plan', methods=['POST'])
+def create_plan():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        new_plan = WeeklyPlan(
+            user_id=session['user_id'],
+            plan_name=request.form.get('plan_name'),
+            calorie_goal=int(request.form.get('calorie_goal')),
+            time_goal_minutes=int(request.form.get('time_goal_minutes')),
+        )
+        db.session.add(new_plan)
+        db.session.commit()
+        flash("Workout plan created successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error creating plan: {str(e)}", "danger")
+
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/create_workout', methods=['POST'])
