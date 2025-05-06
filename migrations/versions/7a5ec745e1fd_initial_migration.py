@@ -1,8 +1,8 @@
-"""Add secret question and answer to User model
+"""Initial migration.
 
-Revision ID: a0ff351da98f
+Revision ID: 7a5ec745e1fd
 Revises: 
-Create Date: 2025-04-23 20:45:00.692760
+Create Date: 2025-04-29 20:53:23.270180
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'a0ff351da98f'
+revision = '7a5ec745e1fd'
 down_revision = None
 branch_labels = None
 depends_on = None
