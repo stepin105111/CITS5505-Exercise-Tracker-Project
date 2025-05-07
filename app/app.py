@@ -5,6 +5,10 @@ from datetime import datetime
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
 import click
+from datetime import timedelta
+from collections import Counter
+from collections import defaultdict
+
 
 app = Flask(__name__)
 
@@ -212,13 +216,15 @@ def dashboard():
     
     weekly_plans = WeeklyPlan.query.filter_by(user_id=user.id).all()
 
+    for plan in weekly_plans:
+        plan.start_date = plan.created_at.date()
+        plan.end_date = (plan.created_at + timedelta(days=7)).date()
+
     workout_logs = WorkoutLog.query.filter_by(user_id=user.id).all()
 
-
-    # Calculate stats
     total_duration = sum([log.duration_minutes for log in workout_logs])
     total_calories = sum([log.calories for log in workout_logs if log.calories])
-     # Calculate unique workout days
+
     workout_days_set = set()
     for log in workout_logs:
         if log.workout_days:
@@ -226,8 +232,58 @@ def dashboard():
             workout_days_set.update(days)
 
     total_workout_days = len(workout_days_set)
-    
     distance_km = 11.5  
+
+    # Visualisation logic -----------------------------------
+    
+    # 🟦 Pie chart data calculation 
+    type_counter = Counter(log.workout_type for log in workout_logs if log.workout_type)
+    workout_types = list(type_counter.keys())
+    workout_counts = list(type_counter.values())
+
+    # 🟧 Bar chart: Calories per weekday
+    from collections import defaultdict
+    weekday_calories = defaultdict(int)
+    for log in workout_logs:
+        if log.workout_days and log.calories:
+            for day in log.workout_days.split(','):
+                weekday_calories[day.strip()] += log.calories
+
+    weekday_order = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+    sorted_weekdays = [day for day in weekday_order if day in weekday_calories]
+    calories_by_weekday = [weekday_calories[day] for day in sorted_weekdays]
+
+    # 🟪 Line chart: Time spent per weekday (NEW)
+    weekday_time_spent = defaultdict(int)
+    for log in workout_logs:
+        if log.workout_days and log.duration_minutes:
+            for day in log.workout_days.split(','):
+                weekday_time_spent[day.strip()] += log.duration_minutes
+
+    time_sorted_weekdays = [day for day in weekday_order if day in weekday_time_spent]
+    time_by_weekday = [weekday_time_spent[day] for day in time_sorted_weekdays]
+
+
+    # Progress bar 
+
+    progress_data = {}
+
+    for plan in weekly_plans:
+    # Only consider this plan's goal
+        goal_calories = plan.calorie_goal
+        goal_time = plan.time_goal_minutes
+
+    # Calculate percentage progress from total stats already available
+        calorie_ratio = total_calories / goal_calories if goal_calories else 0
+        time_ratio = total_duration / goal_time if goal_time else 0
+
+        progress_percent = min((calorie_ratio + time_ratio) / 2 * 100, 100)  # Cap at 100%
+        progress_data[plan.plan_name] = round(progress_percent, 1)
+
+
+
+
+
 
     return render_template(
         'dashboard.html',
@@ -237,8 +293,21 @@ def dashboard():
         total_duration=total_duration,
         total_calories=total_calories,
         total_workout_days=total_workout_days,
-        distance_km=distance_km
+        distance_km=distance_km,
+        workout_types=workout_types,
+        workout_counts=workout_counts,
+        weekday_labels=sorted_weekdays,
+        weekday_calories=calories_by_weekday,
+        time_labels=time_sorted_weekdays,                  
+        time_spent_values=time_by_weekday,
+        progress_data=progress_data
+                                    
     )
+
+
+
+
+
 
 @app.route('/create_plan', methods=['POST'])
 def create_plan():
@@ -294,6 +363,53 @@ def logout():
     session.clear()
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('login'))
+
+
+@app.route('/delete_plan/<int:plan_id>', methods=['POST'])
+def delete_plan(plan_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    plan = WeeklyPlan.query.filter_by(id=plan_id, user_id=session['user_id']).first()
+    if plan:
+        try:
+            db.session.delete(plan)
+            db.session.commit()
+            flash("Workout plan deleted successfully.", "info")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error deleting plan: {str(e)}", "danger")
+    else:
+        flash("Plan not found or unauthorized action.", "warning")
+
+    return redirect(url_for('dashboard'))
+
+@app.route('/reset_stats', methods=['POST'])
+def reset_stats():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        # Option 1: Delete all logs
+        WorkoutLog.query.filter_by(user_id=session['user_id']).delete()
+
+        # Option 2 (alternative): Zero out fields instead of deleting
+        # logs = WorkoutLog.query.filter_by(user_id=session['user_id']).all()
+        # for log in logs:
+        #     log.duration_minutes = 0
+        #     log.calories = 0
+        #     log.workout_days = ""
+        # db.session.add_all(logs)
+
+        db.session.commit()
+        flash("All workout stats have been reset.", "info")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error resetting stats: {str(e)}", "danger")
+
+    return redirect(url_for('dashboard'))
+
+
 
 
 if __name__ == '__main__':

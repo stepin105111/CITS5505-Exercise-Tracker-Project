@@ -439,3 +439,96 @@ h2 {
   color: #e74c3c;
 }
 
+
+  
+
+
+  
+  
+
+  .plan-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+  
+  .delete-button {
+    background: linear-gradient(to right, #2ebf91, #8360c3);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 14px;
+    float: right; /* aligns the button to the top right corner */
+    margin-top: -10px;
+  }
+  .delete-button:hover {
+    background: linear-gradient(to right, #27a07c, #6f4bb6);
+  }
+  
+
+
+
+  .chart-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: space-around;
+  }
+  
+  .chart-card {
+    flex: 1 1 300px;
+    max-width: 400px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+
+  canvas {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: 300px !important; /* or another suitable fixed height */
+  }
+  
+
+
+
+
+
+
+
+  .progress-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+  }
+  
+  .progress-item {
+    margin-bottom: 12px;
+  }
+  
+  .progress-bar-wrapper {
+    background-color: #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    height: 24px;
+  }
+  
+  .progress-bar {
+    background-color: #4caf50;
+    height: 100%;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    line-height: 24px;
+    transition: width 0.4s ease;
+  }
+  
+  
