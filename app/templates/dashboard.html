@@ -266,7 +266,6 @@
         </canvas>
       </div>
       
-
       <div class="chart-card">
         <div class="chart-header">
           <h3>Weekly Progression</h3>
@@ -285,12 +284,65 @@
           {% endfor %}
         </ul>
       </div>
+      
 
       
-    </div>
+    
       
     
     </section>
+
+
+    <section id="schedule-section" class="content-section">
+      <div class="container py-4 d-flex justify-content-center">
+        <div class="card shadow p-4" style="width: 100%; max-width: 900px; border-radius: 12px; background-color: white;">
+          
+          <h2 class="text-center mb-4" style="color: #2c3e50;">🏋️ Workout Schedule</h2>
+          <hr>
+    
+          <!-- Weekly Plans -->
+          <h4 class="mb-3">📅 Weekly Plans</h4>
+          <ul class="list-unstyled pl-3">
+            {% for plan in weekly_plans %}
+            <li class="mb-4">
+              <h5 class="font-weight-bold">{{ plan.plan_name }}</h5>
+              <p>📅 {{ plan.start_date }} to {{ plan.end_date }}</p>
+              <p>🔥 Calorie Goal: {{ plan.calorie_goal }} kcal</p>
+              <p>⏱ Time Goal: {{ plan.time_goal_minutes }} mins</p>
+            </li>
+            {% endfor %}
+          </ul>
+    
+          <!-- Planned Workouts -->
+          <h4 class="mt-4 mb-3">📝 Planned Workouts This Week</h4>
+          <table class="table table-striped text-center">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Day</th>
+                <th scope="col">Workout(s)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] %}
+              <tr>
+                <td>{{ day }}</td>
+                <td>
+                  {% for log in workout_logs %}
+                    {% if log.workout_days and day in log.workout_days.split(',') %}
+                      <span class="badge badge-info m-1">{{ log.workout_type }} ({{ log.plan_name }})</span>
+                    {% endif %}
+                  {% endfor %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    
+        </div>
+      </div>
+    </section>
+    
+    
 
 
   </main>
