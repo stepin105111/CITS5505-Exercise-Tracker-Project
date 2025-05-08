@@ -50,3 +50,36 @@ class User(db.Model):
             'created_at': self.created_at,
             'last_login': self.last_login
         }
+
+class WeeklyPlan(db.Model):
+    __tablename__ = 'weekly_plans'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    plan_name = db.Column(db.String(100), nullable=False)
+    calorie_goal = db.Column(db.Integer, nullable=False)
+    time_goal_minutes = db.Column(db.Integer, nullable=False)
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref=db.backref('weekly_plans', lazy=True))
+
+class WorkoutLog(db.Model):
+    __tablename__ = 'workout_logs'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+    plan_name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    duration_minutes = db.Column(db.Integer, nullable=False)
+
+    workout_type = db.Column(db.String(50), nullable=False)
+    calories = db.Column(db.Integer, nullable=True)
+    intensity = db.Column(db.String(50), nullable=True)
+
+    start_date = db.Column(db.Date, nullable=True)
+    workout_days = db.Column(db.String(100), nullable=True)  # Comma-separated: "Mon,Tue,Wed"
+
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    user = db.relationship('User', backref=db.backref('workout_logs', lazy=True))

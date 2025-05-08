@@ -32,6 +32,9 @@
       <a href="#" class="menu-item" data-target="workout-plan-section">
         <i class="fas fa-calendar-alt"></i> <span>Workout Plan</span>
       </a>
+      <a href="#" class="menu-item" data-target="workout-details-section">
+        <i class="fas fa-calendar-alt"></i> <span>Workout Details</span>
+      </a>
       <a href="#" class="menu-item" data-target="workout-statistic-section">
         <i class="fas fa-chart-line"></i> <span>Workout Statistics</span>
       </a>
@@ -60,8 +63,8 @@
             <i class="fas fa-dumbbell"></i>
           </div>
           <div class="stats-info">
-            <h3>Workouts Days</h3>
-            <p>5 / 7</p>
+            <h3>Workout Days</h3>
+            <p>{{ total_workout_days }} / 7</p>
           </div>
         </div>
         <div class="stats-card">
@@ -70,7 +73,7 @@
           </div>
           <div class="stats-info">
             <h3>Calories Burned</h3>
-            <p>500</p>
+            <p>{{ total_calories }}</p>
           </div>
         </div>
         <div class="stats-card">
@@ -79,7 +82,7 @@
           </div>
           <div class="stats-info">
             <h3>Distance Covered</h3>
-            <p>10.5 km</p>
+            <p>{{ distance_km }} km</p>
           </div>
         </div>
         <div class="stats-card">
@@ -88,51 +91,128 @@
           </div>
           <div class="stats-info">
             <h3>Workout Time</h3>
-            <p>1.5 hrs</p>
+            <p>{{ (total_duration // 60) }} hr {{ (total_duration % 60) }} mins</p>
           </div>
         </div>
       </div>
 
       <h2>WORKOUT PLANS</h2>
       <div class="workout-plans">
-        {% for plan in workout_plans %}
+        {% for plan in weekly_plans %}
         <div class="workout-plan">
-          <h3>{{ plan.title }}</h3>
-          <p>{{ plan.description }}</p>
-
-          <p>Progress: {{ plan.progress }}%</p>
+          <h3>{{ plan.plan_name }}</h3>
+          <p>Calories Goal: {{ plan.calorie_goal }}</p>
+          <p>Time Goal: {{ plan.time_goal_minutes }} minutes</p>
         </div>
         {% endfor %}
       </div>
     </section>
     <section id="workout-plan-section" class="content-section">
       <h2>CREATE WORKOUT PLAN</h2>
-      <div class="plan-creator">
+      <form method="post" action="{{ url_for('create_plan') }}">
+        <div class="plan-creator">
 
-        <!-- Plan Name -->
-        <div class="form-group">
-          <label for="plan-name">Plan Name</label>
-          <input type="text" id="plan-name" class="form-control" placeholder="e.g., Summer Body Transformation">
+          <!-- Plan Name -->
+          <div class="form-group">
+            <label for="plan-name">Plan Name</label>
+            <input type="text" id="plan-name" name="plan_name" class="form-control"
+              placeholder="e.g. Body Transformation">
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="plan-calorie">Calories to Burn (week)</label>
+            <textarea id="plan-calorie" name="calorie_goal" class="form-control" rows="3"
+              placeholder="Enter Calories to burn this week..."></textarea>
+          </div>
+
+          <!-- Duration -->
+          <div class="form-group">
+            <label for="plan-duration">Duration in minutes (weeks)</label>
+            <input type="number" id="plan-duration" name="time_goal_minutes" class="form-control">
+          </div>
+
+          <!-- Submit Button -->
+          <button class="btn btn-primary">Create Plan</button>
         </div>
-
-        <!-- Description -->
-        <div class="form-group">
-          <label for="plan-description">Description</label>
-          <textarea id="plan-description" class="form-control" rows="3"
-            placeholder="Describe your workout plan goals..."></textarea>
-        </div>
-
-        <!-- Duration -->
-        <div class="form-group">
-          <label for="plan-duration">Duration (weeks)</label>
-          <input type="number" id="plan-duration" class="form-control" min="1" max="52" value="8">
-        </div>
-
-        <!-- Submit Button -->
-        <button class="btn btn-primary">Create Plan</button>
-      </div>
-
+      </form>
       <div id="workout-plan-container"></div>
+    </section>
+
+    <section id="workout-details-section" class="content-section">
+      <h2>ENTER WORKOUT DETAILS</h2>
+      <form method="post" action="{{ url_for('create_workout') }}">
+        <div class="plan-creator">
+
+          <!-- Plan Name -->
+          <div class="form-group">
+            <label for="plan-name">Workout Name</label>
+            <input type="text" id="plan-name" name="plan_name" class="form-control" placeholder="e.g., Cardio">
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label for="plan-description">Description</label>
+            <textarea id="plan-description" name="description" class="form-control" rows="3"
+              placeholder="Describe your workout plan goals..."></textarea>
+          </div>
+
+          <!-- Duration -->
+          <div class="form-group">
+            <label for="plan-duration">Duration in minutes (weeks)</label>
+            <input type="number" id="plan-duration" name="duration_minutes" class="form-control">
+          </div>
+
+          <!-- Workout Type -->
+          <div class="form-group">
+            <label for="workout-type">Workout Type</label>
+            <select id="workout-type" name="workout_type" class="form-control" required>
+              <option value="">-- Select --</option>
+              <option value="Cardio">Cardio</option>
+              <option value="Strength">Strength</option>
+              <option value="Running">Running</option>
+              <option value="Cycling">Cycling</option>
+              <option value="Yoga">Yoga</option>
+              <option value="Mixed">Mixed</option>
+            </select>
+          </div>
+
+          <!-- Calories Goal -->
+          <div class="form-group">
+            <label for="calories-goal">Calories</label>
+            <input type="number" id="calories-goal" name="calories" class="form-control" placeholder="e.g., 500">
+          </div>
+
+          <!-- Intensity -->
+          <div class="form-group">
+            <label for="intensity">Intensity</label>
+            <select id="intensity" name="intensity" class="form-control">
+              <option value="">-- Select Intensity --</option>
+              <option value="Low">Low</option>
+              <option value="Moderate">Moderate</option>
+              <option value="High">High</option>
+            </select>
+          </div>
+
+          <!-- Start Date -->
+          <div class="form-group">
+            <label for="start-date">Start Date</label>
+            <input type="date" id="start-date" name="start_date" class="form-control">
+          </div>
+
+          <!-- Workout Days -->
+          <div class="form-group">
+            <label for="plan-days">Workout Days</label>
+            <input type="text" name="workout_days" class="form-control" placeholder="e.g., Mon,Wed,Fri">
+          </div>
+
+          <!-- Submit Button -->
+          <button class="btn btn-primary">Create Workout</button>
+        </div>
+      </form>
+
+
+      <div id="workout-details-container"></div>
     </section>
     <section id="workout-statistic-section" class="content-section">
       <h2>WORKOUT STATISTICS</h2>

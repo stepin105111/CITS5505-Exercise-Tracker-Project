@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
-from app.database import db, User
+from app.database import db, User, WeeklyPlan, WorkoutLog
 from datetime import datetime
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
@@ -202,18 +202,92 @@ def reset_password():
 
 @app.route('/dashboard')
 def dashboard():
-   if 'username' not in session:
+    if 'username' not in session:
         return redirect(url_for('login'))
 
-   user = User.query.filter_by(username=session['username']).first()
-   if not user:
+    user = User.query.filter_by(username=session['username']).first()
+    if not user:
         session.clear()
         return redirect(url_for('login'))
+    
+    weekly_plans = WeeklyPlan.query.filter_by(user_id=user.id).all()
 
-   return render_template(
-    'dashboard.html', 
-    user=user,
-    username=user.username)
+    workout_logs = WorkoutLog.query.filter_by(user_id=user.id).all()
+
+
+    # Calculate stats
+    total_duration = sum([log.duration_minutes for log in workout_logs])
+    total_calories = sum([log.calories for log in workout_logs if log.calories])
+     # Calculate unique workout days
+    workout_days_set = set()
+    for log in workout_logs:
+        if log.workout_days:
+            days = [day.strip() for day in log.workout_days.split(',')]
+            workout_days_set.update(days)
+
+    total_workout_days = len(workout_days_set)
+    
+    distance_km = 11.5  
+
+    return render_template(
+        'dashboard.html',
+        user=user,
+        weekly_plans=weekly_plans,
+        workout_logs=workout_logs,
+        total_duration=total_duration,
+        total_calories=total_calories,
+        total_workout_days=total_workout_days,
+        distance_km=distance_km
+    )
+
+@app.route('/create_plan', methods=['POST'])
+def create_plan():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        new_plan = WeeklyPlan(
+            user_id=session['user_id'],
+            plan_name=request.form.get('plan_name'),
+            calorie_goal=int(request.form.get('calorie_goal')),
+            time_goal_minutes=int(request.form.get('time_goal_minutes')),
+        )
+        db.session.add(new_plan)
+        db.session.commit()
+        flash("Workout plan created successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error creating plan: {str(e)}", "danger")
+
+    return redirect(url_for('dashboard'))
+
+
+@app.route('/create_workout', methods=['POST'])
+def create_workout():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    try:
+        print("Workout form data:", request.form.to_dict())
+
+        workout = WorkoutLog(
+            user_id=session['user_id'],
+            plan_name=request.form.get('plan_name'),
+            description=request.form.get('description'),
+            duration_minutes=int(request.form.get('duration_minutes')),
+            workout_type=request.form.get('workout_type'),
+            calories=int(request.form.get('calories') or 0),
+            intensity=request.form.get('intensity'),
+            workout_days=request.form.get('workout_days'), 
+        )
+        db.session.add(workout)
+        db.session.commit()
+        flash("Workout logged successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error logging workout: {str(e)}", "danger")
+
+    return redirect(url_for('dashboard'))
 
 @app.route('/logout')
 def logout():
