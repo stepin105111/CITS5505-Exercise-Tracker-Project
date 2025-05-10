@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import os
-from app.database import db, User, WeeklyPlan, WorkoutLog
+from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
@@ -8,6 +8,7 @@ import click
 from datetime import timedelta
 from collections import Counter
 from collections import defaultdict
+import random
 
 
 app = Flask(__name__)
@@ -280,8 +281,79 @@ def dashboard():
         progress_percent = min((calorie_ratio + time_ratio) / 2 * 100, 100)  # Cap at 100%
         progress_data[plan.plan_name] = round(progress_percent, 1)
 
+    # Get current user's recent workout
+    user_recent_log = WorkoutLog.query.filter_by(user_id=user.id)\
+        .order_by(WorkoutLog.created_at.desc())\
+        .first()
+    
+    # Friend data for share section
+    friends = user.get_all_friends()
 
+    # Get real workout data for each friend and include current user
+    leaderboard_data = []
 
+    # Add current user's data
+    if user_recent_log:
+        days_ago = (datetime.utcnow() - user_recent_log.created_at).days
+        leaderboard_data.append({
+            'username': user.username + ' (You)',
+            'activity': user_recent_log.workout_type,
+            'calories': user_recent_log.calories or 0,
+            'duration': user_recent_log.duration_minutes,
+            'shared_days_ago': days_ago,
+            'is_current_user': True
+        })
+    else:
+        leaderboard_data.append({
+            'username': user.username + ' (You)',
+            'activity': 'No recent activity',
+            'calories': 0,
+            'duration': 0,
+            'shared_days_ago': None,
+            'is_current_user': True
+        })
+
+    # Add friends data
+    for friend in friends:
+        # Find the most recent workout log for this friend
+        recent_log = WorkoutLog.query.filter_by(user_id=friend.id)\
+            .order_by(WorkoutLog.created_at.desc())\
+            .first()
+        
+        if recent_log:
+            # Calculate days ago
+            days_ago = (datetime.utcnow() - recent_log.created_at).days
+            
+            # Add friend with their actual workout data
+            leaderboard_data.append({
+                'username': friend.username,
+                'activity': recent_log.workout_type,
+                'calories': recent_log.calories or 0,
+                'duration': recent_log.duration_minutes,
+                'shared_days_ago': days_ago,
+                'is_current_user': False
+            })
+        else:
+            # Friend has no workout logs yet
+            leaderboard_data.append({
+                'username': friend.username,
+                'activity': 'No recent activity',
+                'calories': 0,
+                'duration': 0,
+                'shared_days_ago': None,
+                'is_current_user': False
+            })
+
+    # Sort everyone by calories burned (highest first)
+    leaderboard_data = sorted(leaderboard_data, key=lambda x: x['calories'], reverse=True)
+
+    # Add ranking position
+    for i, person_data in enumerate(leaderboard_data):
+        person_data['rank'] = i + 1
+
+    # Set these in the context for rendering
+    friends_data = leaderboard_data
+    has_friends = len(friends) > 0
 
 
 
@@ -300,7 +372,8 @@ def dashboard():
         weekday_calories=calories_by_weekday,
         time_labels=time_sorted_weekdays,                  
         time_spent_values=time_by_weekday,
-        progress_data=progress_data
+        progress_data=progress_data,
+        friends=friends_data
                                     
     )
 
@@ -409,6 +482,99 @@ def reset_stats():
 
     return redirect(url_for('dashboard'))
 
+# Friend search and add functionality
+@app.route('/search-users', methods=['GET'])
+def search_users():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    query = request.args.get('query', '')
+    
+    if not query or len(query) < 2:
+        return jsonify({'users': []})
+    
+    # Find users with usernames containing the query
+    current_user = User.query.filter_by(username=session['username']).first()
+    users = User.query.filter(
+        User.username.like(f'%{query}%'), 
+        User.id != current_user.id
+    ).limit(10).all()
+    
+    # Format results with friendship status
+    results = []
+    for user in users:
+        results.append({
+            'id': user.id,
+            'username': user.username,
+            'is_friend': current_user.is_friend(user)
+        })
+    
+    return jsonify({'users': results})
+
+@app.route('/add-friend', methods=['POST'])
+def add_friend():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    friend_username = request.json.get('username')
+    
+    if not friend_username:
+        return jsonify({'error': 'No username provided'}), 400
+    
+    current_user = User.query.filter_by(username=session['username']).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    
+    if not friend:
+        return jsonify({'error': 'User not found'}), 404
+    
+    if current_user.id == friend.id:
+        return jsonify({'error': 'Cannot add yourself as a friend'}), 400
+    
+    if current_user.is_friend(friend):
+        return jsonify({'error': 'Already friends with this user'}), 400
+    
+    try:
+        success = current_user.add_friend(friend)
+        db.session.commit()
+        
+        if success:
+            return jsonify({'message': f'Added {friend.username} as a friend'})
+        else:
+            return jsonify({'error': 'Failed to add friend'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error adding friend: {str(e)}'}), 500
+    
+@app.route('/remove-friend', methods=['POST'])
+def remove_friend():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+    
+    friend_username = request.json.get('username')
+    
+    if not friend_username:
+        return jsonify({'error': 'No username provided'}), 400
+    
+    current_user = User.query.filter_by(username=session['username']).first()
+    friend = User.query.filter_by(username=friend_username).first()
+    
+    if not friend:
+        return jsonify({'error': 'User not found'}), 404
+    
+    if not current_user.is_friend(friend):
+        return jsonify({'error': 'Not friends with this user'}), 400
+    
+    try:
+        success = current_user.remove_friend(friend)
+        db.session.commit()
+        
+        if success:
+            return jsonify({'message': f'Removed {friend.username} from friends'})
+        else:
+            return jsonify({'error': 'Failed to remove friend'}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': f'Error removing friend: {str(e)}'}), 500
 
 
 

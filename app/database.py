@@ -5,6 +5,13 @@ from datetime import datetime
 # Initialize the database
 db = SQLAlchemy()
 
+# Friendship association table
+friendships = db.Table('friendships',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('friend_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
+    db.Column('created_at', db.DateTime, default=datetime.utcnow)
+)
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -15,6 +22,16 @@ class User(db.Model):
     secret_answer_hash = db.Column(db.String(256), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
+
+    # Define the many-to-many relationship for friends
+    friends = db.relationship(
+        'User',
+        secondary=friendships,
+        primaryjoin=(friendships.c.user_id == id),
+        secondaryjoin=(friendships.c.friend_id == id),
+        backref=db.backref('friended_by', lazy='dynamic'),
+        lazy='dynamic'
+    )
     
     
     def __repr__(self):
@@ -40,6 +57,28 @@ class User(db.Model):
         """Update the last login timestamp"""
         self.last_login = datetime.utcnow()
         db.session.commit()
+
+    def add_friend(self, user):
+        """Add a friend relationship"""
+        if not self.is_friend(user) and self.id != user.id:
+            self.friends.append(user)
+            return True
+        return False
+            
+    def remove_friend(self, user):
+        """Remove a friend relationship"""
+        if self.is_friend(user):
+            self.friends.remove(user)
+            return True
+        return False
+    
+    def is_friend(self, user):
+        """Check if user is a friend"""
+        return self.friends.filter(friendships.c.friend_id == user.id).count() > 0
+    
+    def get_all_friends(self):
+        """Get all friends"""
+        return self.friends.all()
     
     def to_dict(self):
         """Convert user object to dictionary"""
