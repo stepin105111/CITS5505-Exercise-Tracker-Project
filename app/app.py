@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+
 import os
 from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
@@ -23,6 +25,14 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 604800 # 7 days
 db.init_app(app)
 migrate = Migrate(app, db)
 
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login' 
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
 
 # Command to initialize the database
 @app.cli.command("init-db")
@@ -38,7 +48,7 @@ def index():
 
 @app.route('/register',methods=['GET','POST'])
 def register():
-    if 'username' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
@@ -78,9 +88,9 @@ def register():
 
     return render_template('register.html', error=None)
 
-@app.route('/login',methods=['GET','POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    if 'username' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
@@ -91,11 +101,8 @@ def login():
         user = User.query.filter_by(username=username).first()
 
         if user and user.check_password(password):
-            session['username'] = username
-            session['user_id'] = user.id
+            login_user(user, remember=remember)
             user.update_last_login()
-            if remember:
-                session.permanent = True
             return redirect(url_for('dashboard'))
         else:
             return render_template('login.html', error='Invalid username or password')
@@ -112,7 +119,7 @@ def home():
 
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
-    if 'username' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
     if request.method == 'POST':
@@ -141,7 +148,7 @@ def forgot_password():
 
 @app.route('/verify-answer', methods=['POST'])
 def verify_answer():
-    if 'username' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
     username = request.form.get('username')
@@ -169,7 +176,7 @@ def verify_answer():
     
 @app.route('/reset-password', methods=['POST'])
 def reset_password():
-    if 'username' in session:
+    if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
     
     username = request.form.get('username')
@@ -206,15 +213,10 @@ def reset_password():
         return render_template('forgot_password.html', step='username', error='User not found')
 
 @app.route('/dashboard')
+@login_required
 def dashboard():
-    if 'username' not in session:
-        return redirect(url_for('login'))
+    user = current_user
 
-    user = User.query.filter_by(username=session['username']).first()
-    if not user:
-        session.clear()
-        return redirect(url_for('login'))
-    
     weekly_plans = WeeklyPlan.query.filter_by(user_id=user.id).all()
 
     for plan in weekly_plans:
@@ -344,6 +346,7 @@ def dashboard():
                 'is_current_user': False
             })
 
+
     # Sort everyone by calories burned (highest first)
     leaderboard_data = sorted(leaderboard_data, key=lambda x: x['calories'], reverse=True)
 
@@ -377,19 +380,13 @@ def dashboard():
                                     
     )
 
-
-
-
-
-
 @app.route('/create_plan', methods=['POST'])
+@login_required
 def create_plan():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
+    
     try:
         new_plan = WeeklyPlan(
-            user_id=session['user_id'],
+            user_id=current_user.id,
             plan_name=request.form.get('plan_name'),
             calorie_goal=int(request.form.get('calorie_goal')),
             time_goal_minutes=int(request.form.get('time_goal_minutes')),
@@ -405,15 +402,14 @@ def create_plan():
 
 
 @app.route('/create_workout', methods=['POST'])
+@login_required
 def create_workout():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
+    
     try:
         print("Workout form data:", request.form.to_dict())
 
         workout = WorkoutLog(
-            user_id=session['user_id'],
+            user_id=current_user.id,
             plan_name=request.form.get('plan_name'),
             description=request.form.get('description'),
             duration_minutes=int(request.form.get('duration_minutes')),
@@ -432,18 +428,18 @@ def create_workout():
     return redirect(url_for('dashboard'))
 
 @app.route('/logout')
+@login_required
 def logout():
-    session.clear()
+    logout_user()
     flash('You have been logged out successfully.', 'info')
     return redirect(url_for('login'))
 
 
 @app.route('/delete_plan/<int:plan_id>', methods=['POST'])
 def delete_plan(plan_id):
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
 
-    plan = WeeklyPlan.query.filter_by(id=plan_id, user_id=session['user_id']).first()
+    plan = WeeklyPlan.query.filter_by(id=plan_id, user_id=current_user.id).first()
+    
     if plan:
         try:
             db.session.delete(plan)
@@ -459,15 +455,13 @@ def delete_plan(plan_id):
 
 @app.route('/reset_stats', methods=['POST'])
 def reset_stats():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-
+    
     try:
         # Option 1: Delete all logs
-        WorkoutLog.query.filter_by(user_id=session['user_id']).delete()
+        WorkoutLog.query.filter_by(user_id=current_user.id).delete()
 
         # Option 2 (alternative): Zero out fields instead of deleting
-        # logs = WorkoutLog.query.filter_by(user_id=session['user_id']).all()
+        # logs = WorkoutLog.query.filter_by(user_id=current_user.id).all()
         # for log in logs:
         #     log.duration_minutes = 0
         #     log.calories = 0
