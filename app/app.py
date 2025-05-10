@@ -478,9 +478,8 @@ def reset_stats():
 
 # Friend search and add functionality
 @app.route('/search-users', methods=['GET'])
+@login_required
 def search_users():
-    if 'username' not in session:
-        return jsonify({'error': 'Not logged in'}), 401
     
     query = request.args.get('query', '')
     
@@ -488,7 +487,6 @@ def search_users():
         return jsonify({'users': []})
     
     # Find users with usernames containing the query
-    current_user = User.query.filter_by(username=session['username']).first()
     users = User.query.filter(
         User.username.like(f'%{query}%'), 
         User.id != current_user.id
@@ -506,16 +504,14 @@ def search_users():
     return jsonify({'users': results})
 
 @app.route('/add-friend', methods=['POST'])
+@login_required
 def add_friend():
-    if 'username' not in session:
-        return jsonify({'error': 'Not logged in'}), 401
     
     friend_username = request.json.get('username')
     
     if not friend_username:
         return jsonify({'error': 'No username provided'}), 400
     
-    current_user = User.query.filter_by(username=session['username']).first()
     friend = User.query.filter_by(username=friend_username).first()
     
     if not friend:
@@ -540,16 +536,14 @@ def add_friend():
         return jsonify({'error': f'Error adding friend: {str(e)}'}), 500
     
 @app.route('/remove-friend', methods=['POST'])
+@login_required
 def remove_friend():
-    if 'username' not in session:
-        return jsonify({'error': 'Not logged in'}), 401
     
     friend_username = request.json.get('username')
     
     if not friend_username:
         return jsonify({'error': 'No username provided'}), 400
     
-    current_user = User.query.filter_by(username=session['username']).first()
     friend = User.query.filter_by(username=friend_username).first()
     
     if not friend:
