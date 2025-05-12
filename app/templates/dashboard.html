@@ -341,7 +341,121 @@
     </section>
 
 
-
+    <section id="share-section" class="content-section">
+      <h2>FRIENDS & LEADERBOARD</h2>
+      
+      <!-- Search Friends Section -->
+      <div class="search-container">
+        <h3 class="section-title">Find Friends</h3>
+        <input type="text" id="user-search" class="search-input" placeholder="Search by username...">
+        <div id="search-results" class="search-results"></div>
+      </div>
+    
+      <!-- Friends Leaderboard -->
+      <div class="leaderboard-container">
+        <h3 class="section-title">Friend Activity Leaderboard</h3>
+        
+        {% if friends %}
+          {% for friend in friends %}
+            <div class="friend-card {% if friend.rank == 1 %}top-rank{% endif %} {% if friend.is_current_user %}current-user-card{% endif %}">
+              <div class="rank-badge {% if friend.is_current_user %}user-badge{% endif %}">{{ friend.rank }}</div>
+              <div class="friend-name">{{ friend.username }}</div>
+              
+              {% if friend.activity == 'No recent activity' %}
+                <p><span class="activity-icon">⏳</span> No workout activity recorded yet.</p>
+              {% else %}
+                <p>
+                  {% if friend.activity == 'Strength Training' %}
+                    <span class="activity-icon">🏋️</span>
+                  {% elif friend.activity == 'Running' %}
+                    <span class="activity-icon">🏃‍♂️</span>
+                  {% elif friend.activity == 'Cardio' %}
+                    <span class="activity-icon">❤️</span>
+                  {% elif friend.activity == 'Yoga' %}
+                    <span class="activity-icon">🧘</span>
+                  {% elif friend.activity == 'Swimming' %}
+                    <span class="activity-icon">🏊‍♂️</span>
+                  {% elif friend.activity == 'Cycling' %}
+                    <span class="activity-icon">🚴‍♀️</span>
+                  {% elif friend.activity == 'Mixed' %}
+                    <span class="activity-icon">🔄</span>
+                  {% else %}
+                    <span class="activity-icon">💪</span>
+                  {% endif %}
+                  
+                  Burned <strong>{{ friend.calories }} kcal</strong> in <strong>{{ friend.duration }} minutes</strong> 
+                  doing {{ friend.activity }}.
+                </p>
+                
+                {% if friend.shared_days_ago is not none %}
+                  <p><small class="text-muted">
+                    {% if friend.shared_days_ago == 0 %}
+                      Shared today
+                    {% elif friend.shared_days_ago == 1 %}
+                      Shared yesterday
+                    {% else %}
+                      Shared {{ friend.shared_days_ago }} days ago
+                    {% endif %}
+                  </small></p>
+                {% endif %}
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% elif has_friends %}
+          <div class="text-center p-4">
+            <p>You haven't added any friends yet. Use the search above to find friends!</p>
+          </div>
+        {% else %}
+          <div class="friend-card current-user-card">
+            <div class="rank-badge user-badge">1</div>
+            <div class="friend-name">{{ user.username }} (You)</div>
+            
+            {% if friends[0].activity == 'No recent activity' %}
+              <p><span class="activity-icon">⏳</span> No workout activity recorded yet.</p>
+            {% else %}
+              <p>
+                {% if friends[0].activity == 'Strength Training' %}
+                  <span class="activity-icon">🏋️</span>
+                {% elif friends[0].activity == 'Running' %}
+                  <span class="activity-icon">🏃‍♂️</span>
+                {% elif friends[0].activity == 'Cardio' %}
+                  <span class="activity-icon">❤️</span>
+                {% elif friends[0].activity == 'Yoga' %}
+                  <span class="activity-icon">🧘</span>
+                {% elif friends[0].activity == 'Swimming' %}
+                  <span class="activity-icon">🏊‍♂️</span>
+                {% elif friends[0].activity == 'Cycling' %}
+                  <span class="activity-icon">🚴‍♀️</span>
+                {% elif friends[0].activity == 'Mixed' %}
+                  <span class="activity-icon">🔄</span>
+                {% else %}
+                  <span class="activity-icon">💪</span>
+                {% endif %}
+                
+                Burned <strong>{{ friends[0].calories }} kcal</strong> in <strong>{{ friends[0].duration }} minutes</strong> 
+                doing {{ friends[0].activity }}.
+              </p>
+              
+              {% if friends[0].shared_days_ago is not none %}
+                <p><small class="text-muted">
+                  {% if friends[0].shared_days_ago == 0 %}
+                    Shared today
+                  {% elif friends[0].shared_days_ago == 1 %}
+                    Shared yesterday
+                  {% else %}
+                    Shared {{ friends[0].shared_days_ago }} days ago
+                  {% endif %}
+                </small></p>
+              {% endif %}
+            {% endif %}
+            
+            <div class="text-center mt-3">
+              <p>You'll see how you compare once you add friends. Use the search above to find friends!</p>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </section>
 
   </main>
 </div>
@@ -351,5 +465,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
 <script src="{{ url_for('static', filename='js/visualise.js') }}"></script>
 <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+<script src="{{ url_for('static', filename='js/friends.js') }}"></script>
 
 {% endblock %}
