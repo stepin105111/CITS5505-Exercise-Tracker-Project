@@ -18,8 +18,8 @@
     <div class="menu-toggle">
       <i class="fas fa-bars"></i>
     </div>
-    <div class="sidebar-header">
-      <img src="static/images/Fitness logo.jpg" alt="Profile">
+        <div class="sidebar-header">
+      <div class="profile-emoji">{{ user.profile_emoji or '😀' }}</div>
       <div class="user-info">
         <h3>{{ user.username }}</h3>
         <p>Fitness Enthusiast</p>
@@ -28,6 +28,9 @@
     <nav class="menu">
       <a href="#" class="menu-item active" data-target="dashboard-section">
         <i class="fas fa-home"></i> <span>Dashboard</span>
+      </a>
+      <a href="#" class="menu-item" data-target="profile-section">
+        <i class="fas fa-user"></i> <span>My Profile</span>
       </a>
       <a href="#" class="menu-item" data-target="workout-plan-section">
         <i class="fas fa-calendar-alt"></i> <span>Workout Plan</span>
@@ -99,8 +102,7 @@
       <form method="POST" action="{{ url_for('reset_stats') }}"
         onsubmit="return confirm('Are you sure you want to reset all workout stats?');">
         <button type="submit" class="btn custom-btn">Reset Stats</button>
-      </form>
-
+      </form>     
 
       <h2>WORKOUT PLANS</h2>
       <div class="workout-plans">
@@ -120,8 +122,73 @@
         </div>
         {% endfor %}
       </div>
-
     </section>
+
+    <section id="profile-section" class="content-section">
+      <h2>My Profile</h2>
+      <div class="profile-container">
+        <div class="profile-header">
+          <div class="profile-emoji">{{ user.profile_emoji or '😀' }}</div>
+          <h3>{{ user.username }}</h3>
+          <p>{{ user.email }}</p>
+        </div>
+        <form method="POST" action="{{ url_for('dashboard') }}">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" readonly>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" readonly>
+          </div>
+          <div class="form-group">
+            <label for="name">Name</label>
+            {{ form.name(class="form-control", placeholder="Enter your name") }}
+            {% if form.name.errors %}
+              <div class="error">{{ form.name.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            {{ form.age(class="form-control", placeholder="Enter your age") }}
+            {% if form.age.errors %}
+              <div class="error">{{ form.age.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="weight">Weight (kg)</label>
+            {{ form.weight(class="form-control", placeholder="Enter your weight") }}
+            {% if form.weight.errors %}
+              <div class="error">{{ form.weight.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="height">Height (cm)</label>
+            {{ form.height(class="form-control", placeholder="Enter your height") }}
+            {% if form.height.errors %}
+              <div class="error">{{ form.height.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label>Profile Emoji</label>
+            <div class="emoji-selector">
+              {% for value, label in form.profile_emoji.choices %}
+                <label>
+                  <input type="radio" name="profile_emoji" value="{{ value }}" {% if user.profile_emoji == value %}checked{% endif %}>
+                  <span class="emoji">{{ label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {% if form.profile_emoji.errors %}
+              <div class="error">{{ form.profile_emoji.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </section> 
+
     <section id="workout-plan-section" class="content-section">
       <h2>CREATE WORKOUT PLAN</h2>
       <form method="post" action="{{ url_for('create_plan') }}">
