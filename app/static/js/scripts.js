@@ -43,6 +43,35 @@ if (dayBtns.length) {
     });
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    // Sidebar navigation
+    const menuItems = document.querySelectorAll('.menu-item');
+    const contentSections = document.querySelectorAll('.content-section');
+    
+    menuItems.forEach(item => {
+        item.addEventListener('click', function (e) {
+            e.preventDefault();
+            const targetSection = this.getAttribute('data-target');
+            
+            // Remove active class from all menu items and sections
+            menuItems.forEach(i => i.classList.remove('active'));
+            contentSections.forEach(s => s.classList.remove('active'));
+            
+            // Add active class to clicked item and target section
+            this.classList.add('active');
+            document.getElementById(targetSection).classList.add('active');
+        });
+    });
+    
+    // Menu toggle for mobile
+    const menuToggle = document.querySelector('.menu-toggle');
+    const menu = document.querySelector('.menu');
+    if (menuToggle && menu) {
+        menuToggle.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+    }
+});
 
 
 
