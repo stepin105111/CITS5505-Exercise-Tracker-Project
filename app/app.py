@@ -1,16 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-
 import os
-from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
 from flask.cli import with_appcontext
 from flask_migrate import Migrate
+from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 import click
 from datetime import timedelta
 from collections import Counter
 from collections import defaultdict
 import random
+from flask import request, redirect, url_for, flash
+from flask_login import current_user, login_required
+from flask_wtf import FlaskForm, CSRFProtect
+from wtforms import StringField, IntegerField, RadioField, SubmitField, FloatField
+from wtforms.validators import DataRequired, Optional, NumberRange
+from flask import render_template, redirect, url_for, flash, request
+from flask_login import login_required, current_user
+
 
 
 app = Flask(__name__)
@@ -21,6 +28,16 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['PERMANENT_SESSION_LIFETIME'] = 604800 # 7 days
 
+    
+class UpdateProfileForm(FlaskForm):
+    name = StringField('Name', validators=[Optional()])
+    age = IntegerField('Age', validators=[Optional(), NumberRange(min=1, max=150, message="Age must be between 1 and 150")])
+    weight = FloatField('Weight (kg)', validators=[Optional(), NumberRange(min=1, max=500, message="Weight must be between 1 and 500 kg")])
+    height = FloatField('Height (cm)', validators=[Optional(), NumberRange(min=1, max=300, message="Height must be between 1 and 300 cm")])
+    profile_emoji = RadioField('Profile Emoji', choices=[
+        ('😀', '😀'), ('😎', '😎'), ('🏋️', '🏋️'), ('🚴', '🚴'), ('🏃', '🏃'), ('🧘', '🧘'), ('💪', '💪')
+    ], validators=[Optional()])
+    submit = SubmitField('Update Profile')
 
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -212,10 +229,11 @@ def reset_password():
     else:
         return render_template('forgot_password.html', step='username', error='User not found')
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     user = current_user
+    form = UpdateProfileForm()
 
     weekly_plans = WeeklyPlan.query.filter_by(user_id=user.id).all()
 
@@ -358,7 +376,26 @@ def dashboard():
     friends_data = leaderboard_data
     has_friends = len(friends) > 0
 
-
+    if form.validate_on_submit():
+        try:
+            current_user.name = form.name.data
+            current_user.age = form.age.data
+            current_user.weight = form.weight.data
+            current_user.height = form.height.data
+            current_user.profile_emoji = form.profile_emoji.data or '😀'
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating profile: {str(e)}', 'danger')
+        return redirect(url_for('dashboard'))
+    
+    # Prepopulate form with current user data
+    form.name.data = user.name
+    form.age.data = user.age
+    form.weight.data = user.weight
+    form.height.data = user.height
+    form.profile_emoji.data = user.profile_emoji
 
     return render_template(
         'dashboard.html',
@@ -376,9 +413,30 @@ def dashboard():
         time_labels=time_sorted_weekdays,                  
         time_spent_values=time_by_weekday,
         progress_data=progress_data,
-        friends=friends_data
+        friends=friends_data,
+        form=form
                                     
     )
+
+@app.route('/update_profile', methods=['POST'])
+@login_required
+def update_profile():
+    name = request.form.get('name')
+    age = request.form.get('age')
+    weight = request.form.get('weight')
+    height = request.form.get('height')
+    profile_emoji = request.form.get('profile_emoji')
+
+    # Update user details
+    current_user.name = name
+    current_user.age = int(age) if age else None
+    current_user.weight = float(weight) if weight else None
+    current_user.height = float(height) if height else None
+    current_user.profile_emoji = profile_emoji
+
+    db.session.commit()
+    flash('Profile updated successfully!', 'success')
+    return redirect(url_for('dashboard'))
 
 @app.route('/create_plan', methods=['POST'])
 @login_required
