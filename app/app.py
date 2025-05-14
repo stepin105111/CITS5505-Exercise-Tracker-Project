@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-
+from app.forms import LoginForm
 import os
 from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
@@ -87,27 +87,25 @@ def register():
             return render_template('register.html', error=f'Error creating account: {str(e)}')
 
     return render_template('register.html', error=None)
+from app.forms import LoginForm  # make sure import is correct
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
 
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        remember = 'remember' in request.form
-
-        user = User.query.filter_by(username=username).first()
-
-        if user and user.check_password(password):
-            login_user(user, remember=remember)
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user and user.check_password(form.password.data):
+            login_user(user, remember=form.remember.data)
             user.update_last_login()
             return redirect(url_for('dashboard'))
         else:
-            return render_template('login.html', error='Invalid username or password')
-
-    return render_template('login.html', error=None)
+            flash('Invalid username or password', 'error')
+            return render_template('login.html', form=form)
+    
+    return render_template('login.html', form=form)
 
 @app.route('/about')
 def about():

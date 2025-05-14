@@ -10,24 +10,38 @@
 <div class="login-register-wrapper">
     <div class="container">
         <h1>Welcome Back</h1>
-        {% if error %}
-        <p class="error"><i class="fas fa-exclamation-circle"></i> {{ error }}</p>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <p class="error"><i class="fas fa-exclamation-circle"></i>{{ message }}</p>
+        {% endfor %}
         {% endif %}
+        {% endwith %}
+
         <form method="post">
+            {{ form.hidden_tag() }}
+
             <div class="input-group">
-                <input type="text" name="username" placeholder="Username" required>
+                <i class="fas fa-user"></i>
+                {{ form.username(placeholder="Username", type="text", class="username-input") }}
             </div>
+
             <div class="input-group">
                 <i class="fas fa-lock"></i>
-                <input type="password" name="password" id="password" placeholder="Password" required>
+                {{ form.password(placeholder="Password", type="password", id="password", class="password-input") }}
                 <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility()"></i>
             </div>
+
             <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember">
-                <label for="remember">Remember me</label>
-                <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
+                <label>
+                    {{ form.remember() }} {{ form.remember.label.text }}
+                </label>
+                <a href="{{ url_for('forgot_password') }}" class="forgot-password">Forgot password?</a>
             </div>
-            <button type="submit"><i class="fas fa-sign-in-alt"></i> Login</button>
+
+            <button type="submit">
+                <i class="fas fa-sign-in-alt"></i> {{ form.submit.label.text }}
+            </button>
         </form>
         <p class="signup-link">Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p>
     </div>>
