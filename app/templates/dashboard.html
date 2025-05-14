@@ -18,8 +18,8 @@
     <div class="menu-toggle">
       <i class="fas fa-bars"></i>
     </div>
-    <div class="sidebar-header">
-      <img src="static/images/Fitness logo.jpg" alt="Profile">
+        <div class="sidebar-header">
+      <div class="profile-emoji">{{ user.profile_emoji or '😀' }}</div>
       <div class="user-info">
         <h3>{{ user.username }}</h3>
         <p>Fitness Enthusiast</p>
@@ -28,6 +28,9 @@
     <nav class="menu">
       <a href="#" class="menu-item active" data-target="dashboard-section">
         <i class="fas fa-home"></i> <span>Dashboard</span>
+      </a>
+      <a href="#" class="menu-item" data-target="profile-section">
+        <i class="fas fa-user"></i> <span>My Profile</span>
       </a>
       <a href="#" class="menu-item" data-target="workout-plan-section">
         <i class="fas fa-calendar-alt"></i> <span>Workout Plan</span>
@@ -39,7 +42,7 @@
         <i class="fas fa-chart-line"></i> <span>Workout Statistics</span>
       </a>
       <a href="#" class="menu-item" data-target="schedule-section">
-        <i class="fas fa-calendar-week"></i> <span>Schedule</span>
+        <i class="fas fa-calendar-week"></i> <span>My Schedule</span>
       </a>
       <a href="#" class="menu-item" data-target="share-section">
         <i class="fas fa-share-alt"></i> <span>Share Data</span>
@@ -47,9 +50,9 @@
       <a href="#" class="menu-item settings-btn" data-target="settings-section">
         <i class="fas fa-user-circle fa-lg"></i> <span>Settings</span>
       </a>
-      <a href="{{ url_for('logout') }}" class="menu-item logout-btn">
-        <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-      </a>
+      <form method="POST" action="{{ url_for('logout') }}">
+          <button type="submit">Logout</button>
+      </form>
     </nav>
   </aside>
   <main class="main-content">
@@ -99,8 +102,7 @@
       <form method="POST" action="{{ url_for('reset_stats') }}"
         onsubmit="return confirm('Are you sure you want to reset all workout stats?');">
         <button type="submit" class="btn custom-btn">Reset Stats</button>
-      </form>
-
+      </form>     
 
       <h2>WORKOUT PLANS</h2>
       <div class="workout-plans">
@@ -120,38 +122,146 @@
         </div>
         {% endfor %}
       </div>
-
     </section>
-    <section id="workout-plan-section" class="content-section">
-      <h2>CREATE WORKOUT PLAN</h2>
-      <form method="post" action="{{ url_for('create_plan') }}">
-        <div class="plan-creator">
 
-          <!-- Plan Name -->
-          <div class="form-group">
-            <label for="plan-name">Plan Name</label>
-            <input type="text" id="plan-name" name="plan_name" class="form-control"
-              placeholder="e.g. Body Transformation">
-          </div>
-
-          <!-- Description -->
-          <div class="form-group">
-            <label for="plan-calorie">Calories to Burn (week)</label>
-            <textarea id="plan-calorie" name="calorie_goal" class="form-control" rows="3"
-              placeholder="Enter Calories to burn this week..."></textarea>
-          </div>
-
-          <!-- Duration -->
-          <div class="form-group">
-            <label for="plan-duration">Duration in minutes (weeks)</label>
-            <input type="number" id="plan-duration" name="time_goal_minutes" class="form-control">
-          </div>
-
-          <!-- Submit Button -->
-          <button class="btn btn-primary">Create Plan</button>
+    <section id="profile-section" class="content-section">
+      <h2>My Profile</h2>
+      <div class="profile-container">
+        <div class="profile-header">
+          <div class="profile-emoji">{{ user.profile_emoji or '😀' }}</div>
+          <h3>{{ user.username }}</h3>
+          <p>{{ user.email }}</p>
         </div>
+        <form method="POST" action="{{ url_for('dashboard') }}">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" class="form-control" value="{{ user.username }}" readonly>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" readonly>
+          </div>
+          <div class="form-group">
+            <label for="name">Name</label>
+            {{ form.name(class="form-control", placeholder="Enter your name") }}
+            {% if form.name.errors %}
+              <div class="error">{{ form.name.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="age">Age</label>
+            {{ form.age(class="form-control", placeholder="Enter your age") }}
+            {% if form.age.errors %}
+              <div class="error">{{ form.age.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="weight">Weight (kg)</label>
+            {{ form.weight(class="form-control", placeholder="Enter your weight") }}
+            {% if form.weight.errors %}
+              <div class="error">{{ form.weight.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label for="height">Height (cm)</label>
+            {{ form.height(class="form-control", placeholder="Enter your height") }}
+            {% if form.height.errors %}
+              <div class="error">{{ form.height.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <div class="form-group">
+            <label>Profile Emoji</label>
+            <div class="emoji-selector">
+              {% for value, label in form.profile_emoji.choices %}
+                <label>
+                  <input type="radio" name="profile_emoji" value="{{ value }}" {% if user.profile_emoji == value %}checked{% endif %}>
+                  <span class="emoji">{{ label }}</span>
+                </label>
+              {% endfor %}
+            </div>
+            {% if form.profile_emoji.errors %}
+              <div class="error">{{ form.profile_emoji.errors[0] }}</div>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </section> 
+
+    
+    <!-- filepath: c:\Users\Naishadh\Downloads\CITS5505-Exercise-Tracker-Project-main (6)\CITS5505-Exercise-Tracker-Project-main\app\templates\dashboard.html -->
+
+    <!-- Workout Plan Section -->
+    <section id="workout-plan-section" class="content-section">
+      <h2>Create Workout Plan</h2>
+      <form method="POST" action="{{ url_for('create_plan') }}">
+        <div class="form-group">
+          <label for="plan_name">Plan Name</label>
+          <input type="text" id="plan_name" name="plan_name" class="form-control" placeholder="Enter plan name" required>
+        </div>
+        <div class="form-group">
+          <label for="calorie_goal">Calorie Goal</label>
+          <input type="number" id="calorie_goal" name="calorie_goal" class="form-control" placeholder="Enter calorie goal" required>
+        </div>
+        <div class="form-group">
+          <label for="time_goal_minutes">Time Goal (minutes)</label>
+          <input type="number" id="time_goal_minutes" name="time_goal_minutes" class="form-control" placeholder="Enter time goal in minutes" required>
+        </div>
+        <div class="form-group">
+          <label for="workout_days">Select Days</label>
+          <select id="workout_days" name="workout_days" class="form-control" multiple required>
+            <option value="Monday">Monday</option>
+            <option value="Tuesday">Tuesday</option>
+            <option value="Wednesday">Wednesday</option>
+            <option value="Thursday">Thursday</option>
+            <option value="Friday">Friday</option>
+            <option value="Saturday">Saturday</option>
+            <option value="Sunday">Sunday</option>
+          </select>
+          <small class="form-text text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple days.</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Plan</button>
       </form>
-      <div id="workout-plan-container"></div>
+    </section>
+
+    <!-- Schedule Section -->
+    <section id="schedule-section" class="content-section">
+      <h2>My Upcoming Schedule</h2>
+      <div class="schedule-header">
+        <h3>Weekly Workout Schedule</h3>
+        <p>Track your workouts and stay on top of your fitness goals!</p>
+      </div>
+      {% if weekly_plans %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Plan Name</th>
+              <th>Calorie Goal</th>
+              <th>Time Goal (minutes)</th>
+              <th>Days</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for plan in weekly_plans %}
+            <tr>
+              <td>{{ plan.plan_name }}</td>
+              <td>{{ plan.calorie_goal }}</td>
+              <td>{{ plan.time_goal_minutes }}</td>
+              <td>{{ plan.workout_days }}</td>
+              <td>
+                <form method="POST" action="{{ url_for('delete_plan', plan_id=plan.id) }}" onsubmit="return confirm('Are you sure you want to delete this plan?');">
+                  <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No workout plans created yet. Create one above!</p>
+      {% endif %}
     </section>
 
     <section id="workout-details-section" class="content-section">
@@ -281,62 +391,27 @@
             {% endfor %}
           </ul>
         </div>
-
-
-
-
-
-
     </section>
 
-
     <section id="schedule-section" class="content-section">
-      <div class="container py-4 d-flex justify-content-center">
-        <div class="card shadow p-4"
-          style="width: 100%; max-width: 900px; border-radius: 12px; background-color: white;">
-
-          <h2 class="text-center mb-4" style="color: #2c3e50;">🏋️ Workout Schedule</h2>
-          <hr>
-
-          <!-- Weekly Plans -->
-          <h4 class="mb-3">📅 Weekly Plans</h4>
-          <ul class="list-unstyled pl-3">
-            {% for plan in weekly_plans %}
-            <li class="mb-4">
-              <h5 class="font-weight-bold">{{ plan.plan_name }}</h5>
-              <p>📅 {{ plan.start_date }} to {{ plan.end_date }}</p>
-              <p>🔥 Calorie Goal: {{ plan.calorie_goal }} kcal</p>
-              <p>⏱ Time Goal: {{ plan.time_goal_minutes }} mins</p>
-            </li>
-            {% endfor %}
-          </ul>
-
-          <!-- Planned Workouts -->
-          <h4 class="mt-4 mb-3">📝 Planned Workouts This Week</h4>
-          <table class="table table-striped text-center">
-            <thead class="thead-dark">
-              <tr>
-                <th scope="col">Day</th>
-                <th scope="col">Workout(s)</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] %}
-              <tr>
-                <td>{{ day }}</td>
-                <td>
-                  {% for log in workout_logs %}
-                  {% if log.workout_days and day in log.workout_days.split(',') %}
-                  <span class="badge badge-info m-1">{{ log.workout_type }} ({{ log.plan_name }})</span>
-                  {% endif %}
-                  {% endfor %}
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-
-        </div>
+      <h2>MY SCHEDULE</h2>
+      <div class="schedule-header">
+        <h3>Weekly Workout Schedule</h3>
+        <p>Track your workouts and stay on top of your fitness goals!</p>
+      </div>
+      <div class="schedule-container">
+      {% if weekly_plans %}
+        {% for plan in weekly_plans %}
+          <div class="schedule-card">
+            <h3>{{ plan.plan_name }}</h3>
+            <p><strong>Calories Goal:</strong> {{ plan.calorie_goal }}</p>
+            <p><strong>Time Goal:</strong> {{ plan.time_goal_minutes }} minutes</p>
+            <p><strong>Duration:</strong> {{ plan.start_date }} to {{ plan.end_date }}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No workout plans created yet. Create one above!</p>
+      {% endif %}
       </div>
     </section>
 
@@ -454,6 +529,40 @@
             </div>
           </div>
         {% endif %}
+      </div>
+    </section>
+
+    <!-- filepath: c:\Users\Naishadh\Downloads\CITS5505-Exercise-Tracker-Project-main (6)\CITS5505-Exercise-Tracker-Project-main\app\templates\dashboard.html -->
+    <section id="settings-section" class="content-section">
+      <h2>Settings</h2>
+      <form method="POST" action="{{ url_for('update_settings') }}">
+        <!-- Account Settings -->
+        <div class="settings-group">
+          <h3>Account Settings</h3>
+          <div class="form-group">
+            <label for="email">Update Email</label>
+            <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" placeholder="Enter new email">
+          </div>
+          <div class="form-group">
+            <label for="password">Change Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Enter new password">
+          </div>
+          <div class="form-group">
+            <label for="confirm-password">Confirm Password</label>
+            <input type="password" id="confirm-password" name="confirm_password" class="form-control" placeholder="Confirm new password">
+          </div>
+        </div>
+
+        <!-- Save Changes Button -->
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+      </form>
+
+      <!-- Delete Account Section -->
+      <div class="delete-account">
+        <h3>Leaving so soon ?</h3>
+        <form method="POST" action="{{ url_for('delete_account') }}" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.');">
+          <button type="submit" class="btn btn-danger">Delete Account</button>
+        </form>
       </div>
     </section>
 
