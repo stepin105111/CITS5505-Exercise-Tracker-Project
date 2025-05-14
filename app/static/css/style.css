@@ -28,6 +28,17 @@ body {
   overflow-x: hidden;
 }
 
+
+/* Background for index.html */
+body.index-page {
+  background-image: url('../images/index.jpg'); /* Path to the Web.jpg file */
+  background-size: cover; /* Ensures the image covers the entire background */
+  background-position: center; /* Centers the image */
+  background-repeat: no-repeat; /* Prevents the image from repeating */
+  background-attachment: fixed; /* Keeps the background fixed while scrolling */
+  color: white; /* Adjust text color for better readability */
+}
+
 .page-content {
   display: flex;
   justify-content: center;
@@ -120,6 +131,8 @@ h1 {
   align-items: center;
   text-align: center;
   position: relative;
+  margin-top: 7%;
+  margin-bottom: 7%;
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease-out;
 }
@@ -181,19 +194,19 @@ input[type="email"] {
   width: 100%;
   padding: 12px 15px 12px 45px;
   margin: 0;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   box-sizing: border-box;
-  font-size: 16px;
-  transition: all 0.3s;
+  font-size: 14px;
+  transition: all 0.3s ease;
   background-color: #f9f9f9;
 }
 
 input[type="text"]:focus,
 input[type="password"]:focus,
 input[type="email"]:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(78, 84, 200, 0.1);
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
   outline: none;
   background-color: #fff;
 }
@@ -228,26 +241,22 @@ input[type="email"]:focus {
 }
 
 button {
-  background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+  background-color: #007bff;
   color: white;
-  padding: 12px 15px;
+  padding: 10px 15px;
   border: none;
-  border-radius: 6px;
+  border-radius: 5px;
   cursor: pointer;
   width: 100%;
   margin-top: 10px;
   font-size: 16px;
-  font-weight: 500;
-  transition: all 0.3s;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 button:hover {
+  background-color: #0056b3;
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(78, 84, 200, 0.4);
 }
 
 button:active {
@@ -290,20 +299,29 @@ a:hover {
 }
 
 .hero {
-  text-align: center;
-  padding: 80px 20px;
+  text-align: left;
+  padding: 120px 20px;
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 .hero h2 {
-  color: black;
+  color: white;
+  font-weight: 600;
   font-size: 36px;
   margin-bottom: 10px;
+  margin-top: 7%;
+  text-align: left;
 }
 
 .hero p {
   font-size: 18px;
-  color: black
+  color: white;
+  text-align: left;
 }
+
+
 
 /* Password strength meter */
 .password-strength {
@@ -313,16 +331,16 @@ a:hover {
 
 .strength-meter {
   height: 5px;
-  background-color: #eee;
-  border-radius: 3px;
+  background-color: #ddd;
+  border-radius: 5px;
   width: 0;
-  transition: width 0.3s, background-color 0.3s;
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
 .password-strength p {
   font-size: 12px;
   margin-top: 5px;
-  color: #777;
+  color: #666;
 }
 
 /* Terms checkbox */
@@ -332,6 +350,7 @@ a:hover {
   margin-bottom: 20px;
   font-size: 14px;
   text-align: left;
+  color: #555;
 }
 
 .terms input {
@@ -339,22 +358,83 @@ a:hover {
   margin-top: 3px;
 }
 
-/* Responsive adjustments */
+.terms a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.terms a:hover {
+  text-decoration: underline;
+}
+
 @media (max-width: 480px) {
   .container {
     width: 90%;
-    padding: 25px;
+    padding: 20px;
     margin: 15px;
   }
 
   h1 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
-  .remember-me {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+  .input-group input,
+  .input-group select {
+    font-size: 14px;
   }
 
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
 }
+
+/* Styling for the "Get Started" button */
+.btn-primary {
+  display: inline-block;
+  background-color: white; /* Primary blue color */
+  color: black;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 0%;
+  margin-top: 7%;
+}
+
+.btn-primary:hover {
+  background-color: #c7cdd5; /* Darker blue on hover */
+  color: black; /* Change text color to white on hover */
+}
+
+.btn-primary:active {
+  background-color: black; /* Even darker blue on click */
+}
+
+/* Styling for the "Login" button */
+.btn-secondary {
+  display: inline-block;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  text-align: left;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  text-decoration: underline;
+  margin-left: 0%;
+}
+
+.btn-secondary:hover {
+  color: white; /* Change text color to white on hover */
+}
+
+.btn-secondary:active {
+  background-color: #bdc3c8; /* Even darker gray on click */
+  transform: translateY(1px); /* Pressed effect */
+}
+
