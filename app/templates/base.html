@@ -9,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
     {% block header %}
     <header class="page-header">
         <h1>Fitness Tracker</h1>
@@ -18,11 +18,14 @@
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
             <a href="{{ url_for('logout') }}">Logout</a>
             {% else %}
+            <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('register') }}">Register</a>
             <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('contact') }}">Contact</a>
             {% endif %}
         </nav>
     </header>
+    
     {% endblock %}
 
     <main>
