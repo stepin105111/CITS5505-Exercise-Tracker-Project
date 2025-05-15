@@ -101,3 +101,23 @@ class WorkoutLogForm(FlaskForm):
     start_date = DateField("Start Date", validators=[Optional()])
     workout_days = StringField("Workout Days", validators=[Optional()])
     submit = SubmitField("Create Workout")
+
+
+
+class ForgotUsernameForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired(), Length(min=3, max=50)])
+    submit = SubmitField("Find Account")
+
+
+class SecurityQuestionForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    answer = StringField("Answer", validators=[DataRequired()])
+    submit = SubmitField("Verify Answer")
+
+
+class ResetPasswordForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    new_password = PasswordField("New Password", validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField("Confirm Password", validators=[
+        DataRequired(), EqualTo("new_password", message="Passwords must match")])
+    submit = SubmitField("Reset Password")

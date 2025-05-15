@@ -15,7 +15,16 @@ from flask_login import (
     login_required,
     current_user,
 )
-from app.forms import LoginForm, RegisterForm, WorkoutPlanForm, WorkoutLogForm
+from app.forms import (
+    LoginForm,
+    RegisterForm,
+    WorkoutPlanForm,
+    WorkoutLogForm,
+    ForgotUsernameForm,
+    SecurityQuestionForm,
+    ResetPasswordForm,
+)
+
 import os
 from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
@@ -142,9 +151,12 @@ def forgot_password():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
 
-    if request.method == "POST":
-        username = request.form.get("username")
+    form = ForgotUsernameForm()
+
+    if form.validate_on_submit():
+        username = form.username.data
         user = User.query.filter_by(username=username).first()
+
         if user and user.secret_question:
             question_texts = {
                 "first_pet": "What was the name of your first pet?",
@@ -153,23 +165,26 @@ def forgot_password():
                 "first_school": "What was the name of your first school?",
                 "favorite_food": "What is your favorite food?",
             }
-            question_text = question_texts.get(
-                user.secret_question, user.secret_question
-            )
+
+            question_text = question_texts.get(user.secret_question, user.secret_question)
 
             return render_template(
                 "forgot_password.html",
                 step="security_question",
                 username=username,
                 security_question=question_text,
+                form=SecurityQuestionForm(username=username)
             )
         else:
             return render_template(
                 "forgot_password.html",
                 step="username",
+                form=form,
                 error="Username not found or no security question set",
             )
-    return render_template("forgot_password.html", step="username")
+
+    return render_template("forgot_password.html", step="username", form=form)
+
 
 
 @app.route("/verify-answer", methods=["POST"])
@@ -177,36 +192,47 @@ def verify_answer():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
 
-    username = request.form.get("username")
-    answer = request.form.get("answer")
+    form = SecurityQuestionForm()
 
-    user = User.query.filter_by(username=username).first()
+    if form.validate_on_submit():
+        username = form.username.data
+        answer = form.answer.data
 
-    if user and user.check_secret_answer(answer):
-        return render_template(
-            "forgot_password.html", step="reset_password", username=username
-        )
-    else:
-        question_texts = {
-            "first_pet": "What was the name of your first pet?",
-            "birth_city": "In what city were you born?",
-            "mother_maiden": "What is your mother's maiden name?",
-            "first_school": "What was the name of your first school?",
-            "favorite_food": "What is your favorite food?",
-        }
-        question_text = (
-            question_texts.get(user.secret_question, user.secret_question)
-            if user
-            else ""
-        )
+        user = User.query.filter_by(username=username).first()
 
-        return render_template(
-            "forgot_password.html",
-            step="security_question",
-            username=username,
-            security_question=question_text,
-            error="Incorrect answer. Please try again.",
-        )
+        if user and user.check_secret_answer(answer):
+            return render_template(
+                "forgot_password.html",
+                step="reset_password",
+                username=username,
+                form=ResetPasswordForm(username=username)
+            )
+        else:
+            question_texts = {
+                "first_pet": "What was the name of your first pet?",
+                "birth_city": "In what city were you born?",
+                "mother_maiden": "What is your mother's maiden name?",
+                "first_school": "What was the name of your first school?",
+                "favorite_food": "What is your favorite food?",
+            }
+
+            question_text = (
+                question_texts.get(user.secret_question, user.secret_question)
+                if user else ""
+            )
+
+            return render_template(
+                "forgot_password.html",
+                step="security_question",
+                username=username,
+                security_question=question_text,
+                form=form,
+                error="Incorrect answer. Please try again."
+            )
+
+    # If form didn't validate
+    return redirect(url_for("forgot_password"))
+
 
 
 @app.route("/reset-password", methods=["POST"])
@@ -214,49 +240,45 @@ def reset_password():
     if current_user.is_authenticated:
         return redirect(url_for("dashboard"))
 
-    username = request.form.get("username")
-    new_password = request.form.get("new_password")
-    confirm_password = request.form.get("confirm_password")
+    form = ResetPasswordForm()
 
-    if new_password != confirm_password:
-        return render_template(
-            "forgot_password.html",
-            step="reset_password",
-            username=username,
-            error="Passwords do not match",
-        )
+    if form.validate_on_submit():
+        username = form.username.data
+        new_password = form.new_password.data
 
-    if len(new_password) < 6:
-        return render_template(
-            "forgot_password.html",
-            step="reset_password",
-            username=username,
-            error="Password must be at least 6 characters long",
-        )
+        user = User.query.filter_by(username=username).first()
 
-    user = User.query.filter_by(username=username).first()
-
-    if user:
-        try:
-            user.set_password(new_password)
-            db.session.commit()
-            flash(
-                "Password has been reset. Please login with your new password.",
-                "success",
-            )
-            return redirect(url_for("login"))
-        except Exception as e:
-            db.session.rollback()
+        if user:
+            try:
+                user.set_password(new_password)
+                db.session.commit()
+                flash("Password has been reset. Please login with your new password.", "success")
+                return redirect(url_for("login"))
+            except Exception as e:
+                db.session.rollback()
+                return render_template(
+                    "forgot_password.html",
+                    step="reset_password",
+                    username=username,
+                    form=form,
+                    error=f"An error occurred: {str(e)}"
+                )
+        else:
             return render_template(
                 "forgot_password.html",
-                step="reset_password",
-                username=username,
-                error=f"An error occurred: {str(e)}",
+                step="username",
+                form=ForgotUsernameForm(),
+                error="User not found"
             )
-    else:
-        return render_template(
-            "forgot_password.html", step="username", error="User not found"
-        )
+
+    # If form doesn't validate
+    return render_template(
+        "forgot_password.html",
+        step="reset_password",
+        username=form.username.data,
+        form=form
+    )
+
 
 
 @app.route("/dashboard")
