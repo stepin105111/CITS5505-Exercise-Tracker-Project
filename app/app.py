@@ -15,7 +15,7 @@ from flask_login import (
     login_required,
     current_user,
 )
-from app.forms import LoginForm, RegisterForm, WorkoutPlanForm
+from app.forms import LoginForm, RegisterForm, WorkoutPlanForm, WorkoutLogForm
 import os
 from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
@@ -263,7 +263,8 @@ def reset_password():
 @login_required
 def dashboard():
     user = current_user
-    form = WorkoutPlanForm()
+    form_plan = WorkoutPlanForm()
+    form_log = WorkoutLogForm()
 
     weekly_plans = WeeklyPlan.query.filter_by(user_id=user.id).all()
 
@@ -438,8 +439,10 @@ def dashboard():
         time_spent_values=time_by_weekday,
         progress_data=progress_data,
         friends=friends_data,
-        form=form,
+        form_plan=form_plan,
+        form_log=form_log,
     )
+
 
 @app.route("/create_plan", methods=["POST"])
 @login_required
@@ -466,31 +469,35 @@ def create_plan():
     return redirect(url_for("dashboard"))
 
 
-@app.route("/create_workout", methods=["POST"])
+from app.forms import WorkoutLogForm
+
+
+@app.route("/create_workout", methods=["GET", "POST"])
 @login_required
 def create_workout():
+    form = WorkoutLogForm()
 
-    try:
-        print("Workout form data:", request.form.to_dict())
+    if form.validate_on_submit():
+        try:
+            workout = WorkoutLog(
+                user_id=current_user.id,
+                plan_name=form.plan_name.data,
+                description=form.description.data,
+                duration_minutes=form.duration_minutes.data,
+                workout_type=form.workout_type.data,
+                calories=form.calories.data or 0,
+                intensity=form.intensity.data,
+                start_date=form.start_date.data,
+                workout_days=form.workout_days.data,
+            )
+            db.session.add(workout)
+            db.session.commit()
+            flash("Workout logged successfully!", "success")
+        except Exception as e:
+            db.session.rollback()
+            flash(f"Error logging workout: {str(e)}", "danger")
 
-        workout = WorkoutLog(
-            user_id=current_user.id,
-            plan_name=request.form.get("plan_name"),
-            description=request.form.get("description"),
-            duration_minutes=int(request.form.get("duration_minutes")),
-            workout_type=request.form.get("workout_type"),
-            calories=int(request.form.get("calories") or 0),
-            intensity=request.form.get("intensity"),
-            workout_days=request.form.get("workout_days"),
-        )
-        db.session.add(workout)
-        db.session.commit()
-        flash("Workout logged successfully!", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash(f"Error logging workout: {str(e)}", "danger")
-
-    return redirect(url_for("dashboard"))
+        return redirect(url_for("dashboard"))
 
 
 @app.route("/logout")
