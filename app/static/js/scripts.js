@@ -43,6 +43,21 @@ if (dayBtns.length) {
     });
 }
 
+// flash msg
+document.addEventListener('DOMContentLoaded', function() {
+    const flashMessages = document.querySelectorAll('.flash-message');
+    
+    flashMessages.forEach(function(message) {
+      // Auto dismiss after 5 seconds
+      setTimeout(function() {
+        message.style.opacity = '0';
+        setTimeout(function() {
+          message.style.display = 'none';
+        }, 500);
+      }, 5000);
+    });
+  });
+
 
 
 
