@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
-from app.forms import LoginForm
+from app.forms import LoginForm, RegisterForm
 import os
 from app.database import db, User, WeeklyPlan, WorkoutLog, friendships
 from datetime import datetime
@@ -45,37 +45,32 @@ def init_db():
 def index():
     return render_template('index.html')
 
-
-@app.route('/register',methods=['GET','POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard'))
 
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        email = request.form.get('email', '')
-        secret_question = request.form.get('secret_question')
-        secret_answer = request.form.get('secret_answer')
+    form = RegisterForm()
+
+    if form.validate_on_submit():
+        username = form.username.data
+        password = form.password.data
+        email = form.email.data
+        secret_question = form.secret_question.data
+        secret_answer = form.secret_answer.data
 
         existing_user = User.query.filter_by(username=username).first()
-        existing_email = User.query.filter_by(email=email).first() if email else None
+        existing_email = User.query.filter_by(email=email).first()
 
         if existing_user:
-            return render_template('register.html', error='Username already exists')
+            return render_template('register.html', form=form, error='Username already exists')
         if existing_email:
-            return render_template('register.html', error='Email already registered')
-        if len(password) < 6:
-            return render_template('register.html', error='Password must be at least 6 characters long')
+            return render_template('register.html', form=form, error='Email already registered')
 
         new_user = User(username=username, email=email)
         new_user.set_password(password)
-
-        # Set secret question and answer if provided
-        if secret_question and secret_answer:
-            new_user.secret_question = secret_question
-            new_user.set_secret_answer(secret_answer)
-
+        new_user.secret_question = secret_question
+        new_user.set_secret_answer(secret_answer)
 
         try:
             db.session.add(new_user)
@@ -84,10 +79,9 @@ def register():
             return redirect(url_for('login'))
         except Exception as e:
             db.session.rollback()
-            return render_template('register.html', error=f'Error creating account: {str(e)}')
+            return render_template('register.html', form=form, error=f'Error creating account: {str(e)}')
 
-    return render_template('register.html', error=None)
-from app.forms import LoginForm  # make sure import is correct
+    return render_template('register.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
