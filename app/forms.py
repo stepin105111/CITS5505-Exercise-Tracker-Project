@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField
-from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms import StringField, PasswordField, BooleanField, SubmitField, SelectField, TextAreaField, IntegerField
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 
 class RegisterForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired(), Length(min=3, max=50)])
@@ -26,3 +26,9 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[DataRequired()])
     remember = BooleanField('Remember me')
     submit = SubmitField('Login')
+
+class WorkoutPlanForm(FlaskForm):
+    plan_name = StringField('Plan Name', validators=[DataRequired(), Length(max=100)])
+    calorie_goal = TextAreaField('Calories to Burn (week)', validators=[DataRequired()])
+    time_goal_minutes = IntegerField('Duration in minutes (weeks)', validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField('Create Plan')
