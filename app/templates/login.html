@@ -36,15 +36,15 @@
                 <label>
                     {{ form.remember() }} {{ form.remember.label.text }}
                 </label>
-                <a href="{{ url_for('forgot_password') }}" class="forgot-password">Forgot password?</a>
+                <a href="{{ url_for('main.forgot_password') }}" class="forgot-password">Forgot password?</a>
             </div>
-            
+
 
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-sign-in-alt"></i> {{ form.submit.label.text }}
             </button>
         </form>
-        <p class="signup-link">Don't have an account? <a href="{{ url_for('register') }}">Sign up</a></p>
+        <p class="signup-link">Don't have an account? <a href="{{ url_for('main.register') }}">Sign up</a></p>
     </div>>
 </div>
 

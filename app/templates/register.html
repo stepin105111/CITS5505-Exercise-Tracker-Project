@@ -15,7 +15,7 @@
         {% endif %}
         <form method="post" id="signup-form">
             {{ form.hidden_tag() }}
-            
+
             <div class="input-group">
                 <i class="fas fa-user"></i>
                 {{ form.username(placeholder="Username", type="text", class="username-input") }}
@@ -38,7 +38,8 @@
 
             <div class="input-group">
                 <i class="fas fa-lock"></i>
-                 {{ form.confirm_password(placeholder="Confirm Password", type="password", id="confirm_password", class="confirm_password-input") }}
+                {{ form.confirm_password(placeholder="Confirm Password", type="password", id="confirm_password",
+                class="confirm_password-input") }}
                 <i class="fas fa-eye toggle-password" onclick="togglePasswordVisibility('confirm_password')"></i>
             </div>
 
@@ -55,11 +56,11 @@
                 {{ form.terms.label }}
             </div>
 
-             <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary">
                 <i class="fas fa-sign-in-alt"></i> {{ form.submit.label.text }}
             </button>
         </form>
-        <p class="login-link">Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        <p class="login-link">Already have an account? <a href="{{ url_for('main.login') }}">Login</a></p>
     </div>
 
 </div>

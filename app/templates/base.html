@@ -15,11 +15,11 @@
         <h1>Fitness Tracker</h1>
         <nav class="nav-right">
             {% if user %}
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('main.logout') }}">Logout</a>
             {% else %}
-            <a href="{{ url_for('register') }}">Register</a>
-            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('main.register') }}">Register</a>
+            <a href="{{ url_for('main.login') }}">Login</a>
             {% endif %}
         </nav>
     </header>
@@ -27,27 +27,27 @@
 
     <!--flash msg section-->
     {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        <div class="flash-container">
-            {% for category, message in messages %}
-            <div class="flash-message {{ category }}">
-                <span class="flash-icon">
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="flash-message {{ category }}">
+            <span class="flash-icon">
                 {% if category == 'success' %}
-                    <i class="fas fa-check-circle"></i>
+                <i class="fas fa-check-circle"></i>
                 {% elif category == 'error' or category == 'danger' %}
-                    <i class="fas fa-exclamation-circle"></i>
+                <i class="fas fa-exclamation-circle"></i>
                 {% elif category == 'warning' %}
-                    <i class="fas fa-exclamation-triangle"></i>
+                <i class="fas fa-exclamation-triangle"></i>
                 {% else %}
-                    <i class="fas fa-info-circle"></i>
+                <i class="fas fa-info-circle"></i>
                 {% endif %}
-                </span>
-                <span class="flash-text">{{ message }}</span>
-                <span class="flash-close" onclick="this.parentElement.style.display='none';">&times;</span>
-            </div>
-            {% endfor %}
+            </span>
+            <span class="flash-text">{{ message }}</span>
+            <span class="flash-close" onclick="this.parentElement.style.display='none';">&times;</span>
         </div>
-        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     {% endwith %}
     <!--end section-->
 
