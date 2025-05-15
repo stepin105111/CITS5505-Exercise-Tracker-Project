@@ -125,30 +125,27 @@
     <section id="workout-plan-section" class="content-section">
       <h2>CREATE WORKOUT PLAN</h2>
       <form method="post" action="{{ url_for('create_plan') }}">
+        {{ form_plan.hidden_tag() }}
         <div class="plan-creator">
-
-          <!-- Plan Name -->
           <div class="form-group">
-            <label for="plan-name">Plan Name</label>
-            <input type="text" id="plan-name" name="plan_name" class="form-control"
-              placeholder="e.g. Body Transformation">
+            <label for="plan-name">{{ form_plan.plan_name.label }}</label>
+            {{ form_plan.plan_name(class="form-control", id="plan-name", placeholder="e.g. Body Transformation") }}
           </div>
 
-          <!-- Description -->
           <div class="form-group">
-            <label for="plan-calorie">Calories to Burn (week)</label>
-            <textarea id="plan-calorie" name="calorie_goal" class="form-control" rows="3"
-              placeholder="Enter Calories to burn this week..."></textarea>
+            <label for="plan-calorie">{{ form_plan.calorie_goal.label }}</label>
+            {{ form_plan.calorie_goal(class="form-control", id="plan-calorie", rows="3", placeholder="Enter Calories to burn
+            this week...") }}
           </div>
 
-          <!-- Duration -->
           <div class="form-group">
-            <label for="plan-duration">Duration in minutes (weeks)</label>
-            <input type="number" id="plan-duration" name="time_goal_minutes" class="form-control">
+            <label for="plan-duration">{{ form_plan.time_goal_minutes.label }}</label>
+            {{ form_plan.time_goal_minutes(class="form-control", id="plan-duration", placeholder="e.g. 150") }}
           </div>
 
-          <!-- Submit Button -->
-          <button class="btn btn-primary">Create Plan</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i> {{ form_plan.submit.label.text }}
+          </button>
         </div>
       </form>
       <div id="workout-plan-container"></div>
@@ -157,76 +154,56 @@
     <section id="workout-details-section" class="content-section">
       <h2>ENTER WORKOUT DETAILS</h2>
       <form method="post" action="{{ url_for('create_workout') }}">
+        {{ form_log.hidden_tag() }}
         <div class="plan-creator">
 
-          <!-- Plan Name -->
           <div class="form-group">
-            <label for="plan-name">Workout Name</label>
-            <input type="text" id="plan-name" name="plan_name" class="form-control" placeholder="e.g., Cardio">
+            {{ form_log.plan_name.label }}
+            {{ form_log.plan_name(class="form-control", id="plan-name", placeholder="e.g., Cardio") }}
           </div>
 
-          <!-- Description -->
           <div class="form-group">
-            <label for="plan-description">Description</label>
-            <textarea id="plan-description" name="description" class="form-control" rows="3"
-              placeholder="Describe your workout "></textarea>
+            {{ form_log.description.label }}
+            {{ form_log.description(class="form-control", id="plan-description", rows="3", placeholder="Describe your
+            workout") }}
           </div>
 
-          <!-- Duration -->
           <div class="form-group">
-            <label for="plan-duration">Duration in minutes (weeks)</label>
-            <input type="number" id="plan-duration" name="duration_minutes" class="form-control">
+            {{ form_log.duration_minutes.label }}
+            {{ form_log.duration_minutes(class="form-control", id="plan-duration", placeholder="e.g. 150") }}
           </div>
 
-          <!-- Workout Type -->
           <div class="form-group">
-            <label for="workout-type">Workout Type</label>
-            <select id="workout-type" name="workout_type" class="form-control" required>
-              <option value="">-- Select --</option>
-              <option value="Cardio">Cardio</option>
-              <option value="Strength">Strength</option>
-              <option value="Running">Running</option>
-              <option value="Cycling">Cycling</option>
-              <option value="Yoga">Yoga</option>
-              <option value="Mixed">Mixed</option>
-            </select>
+            {{ form_log.workout_type.label }}
+            {{ form_log.workout_type(class="form-control", id="workout-type") }}
           </div>
 
-          <!-- Calories Goal -->
           <div class="form-group">
-            <label for="calories-goal">Calories</label>
-            <input type="number" id="calories-goal" name="calories" class="form-control" placeholder="e.g., 500">
+            {{ form_log.calories.label }}
+            {{ form_log.calories(class="form-control", id="calories-goal", placeholder="e.g., 500") }}
           </div>
 
-          <!-- Intensity -->
           <div class="form-group">
-            <label for="intensity">Intensity</label>
-            <select id="intensity" name="intensity" class="form-control">
-              <option value="">-- Select Intensity --</option>
-              <option value="Low">Low</option>
-              <option value="Moderate">Moderate</option>
-              <option value="High">High</option>
-            </select>
+            {{ form_log.intensity.label }}
+            {{ form_log.intensity(class="form-control", id="intensity") }}
           </div>
 
-          <!-- Start Date -->
           <div class="form-group">
-            <label for="start-date">Start Date</label>
-            <input type="date" id="start-date" name="start_date" class="form-control">
+            {{ form_log.start_date.label }}
+            {{ form_log.start_date(class="form-control", id="start-date") }}
           </div>
 
-          <!-- Workout Days -->
           <div class="form-group">
-            <label for="plan-days">Workout Days</label>
-            <input type="text" name="workout_days" class="form-control" placeholder="e.g., Mon,Wed,Fri">
+            {{ form_log.workout_days.label }}
+            {{ form_log.workout_days(class="form-control", id="plan-days", placeholder="e.g., Mon,Wed,Fri") }}
           </div>
 
-          <!-- Submit Button -->
-          <button class="btn btn-primary">Create Workout</button>
+          <button type="submit" class="btn btn-primary">
+            <i class="fas fa-dumbbell"></i> {{ form_log.submit.label.text }}
+          </button>
+
         </div>
       </form>
-
-
       <div id="workout-details-container"></div>
     </section>
 
@@ -281,12 +258,6 @@
             {% endfor %}
           </ul>
         </div>
-
-
-
-
-
-
     </section>
 
 
@@ -343,116 +314,117 @@
 
     <section id="share-section" class="content-section">
       <h2>FRIENDS & LEADERBOARD</h2>
-      
+
       <!-- Search Friends Section -->
       <div class="search-container">
         <h3 class="section-title">Find Friends</h3>
         <input type="text" id="user-search" class="search-input" placeholder="Search by username...">
         <div id="search-results" class="search-results"></div>
       </div>
-    
+
       <!-- Friends Leaderboard -->
       <div class="leaderboard-container">
         <h3 class="section-title">Friend Activity Leaderboard</h3>
-        
+
         {% if friends %}
-          {% for friend in friends %}
-            <div class="friend-card {% if friend.rank == 1 %}top-rank{% endif %} {% if friend.is_current_user %}current-user-card{% endif %}">
-              <div class="rank-badge {% if friend.is_current_user %}user-badge{% endif %}">{{ friend.rank }}</div>
-              <div class="friend-name">{{ friend.username }}</div>
-              
-              {% if friend.activity == 'No recent activity' %}
-                <p><span class="activity-icon">⏳</span> No workout activity recorded yet.</p>
-              {% else %}
-                <p>
-                  {% if friend.activity == 'Strength Training' %}
-                    <span class="activity-icon">🏋️</span>
-                  {% elif friend.activity == 'Running' %}
-                    <span class="activity-icon">🏃‍♂️</span>
-                  {% elif friend.activity == 'Cardio' %}
-                    <span class="activity-icon">❤️</span>
-                  {% elif friend.activity == 'Yoga' %}
-                    <span class="activity-icon">🧘</span>
-                  {% elif friend.activity == 'Swimming' %}
-                    <span class="activity-icon">🏊‍♂️</span>
-                  {% elif friend.activity == 'Cycling' %}
-                    <span class="activity-icon">🚴‍♀️</span>
-                  {% elif friend.activity == 'Mixed' %}
-                    <span class="activity-icon">🔄</span>
-                  {% else %}
-                    <span class="activity-icon">💪</span>
-                  {% endif %}
-                  
-                  Burned <strong>{{ friend.calories }} kcal</strong> in <strong>{{ friend.duration }} minutes</strong> 
-                  doing {{ friend.activity }}.
-                </p>
-                
-                {% if friend.shared_days_ago is not none %}
-                  <p><small class="text-muted">
-                    {% if friend.shared_days_ago == 0 %}
-                      Shared today
-                    {% elif friend.shared_days_ago == 1 %}
-                      Shared yesterday
-                    {% else %}
-                      Shared {{ friend.shared_days_ago }} days ago
-                    {% endif %}
-                  </small></p>
-                {% endif %}
-              {% endif %}
-            </div>
-          {% endfor %}
-        {% elif has_friends %}
-          <div class="text-center p-4">
-            <p>You haven't added any friends yet. Use the search above to find friends!</p>
-          </div>
-        {% else %}
-          <div class="friend-card current-user-card">
-            <div class="rank-badge user-badge">1</div>
-            <div class="friend-name">{{ user.username }} (You)</div>
-            
-            {% if friends[0].activity == 'No recent activity' %}
-              <p><span class="activity-icon">⏳</span> No workout activity recorded yet.</p>
+        {% for friend in friends %}
+        <div
+          class="friend-card {% if friend.rank == 1 %}top-rank{% endif %} {% if friend.is_current_user %}current-user-card{% endif %}">
+          <div class="rank-badge {% if friend.is_current_user %}user-badge{% endif %}">{{ friend.rank }}</div>
+          <div class="friend-name">{{ friend.username }}</div>
+
+          {% if friend.activity == 'No recent activity' %}
+          <p><span class="activity-icon">⏳</span> No workout activity recorded yet.</p>
+          {% else %}
+          <p>
+            {% if friend.activity == 'Strength Training' %}
+            <span class="activity-icon">🏋️</span>
+            {% elif friend.activity == 'Running' %}
+            <span class="activity-icon">🏃‍♂️</span>
+            {% elif friend.activity == 'Cardio' %}
+            <span class="activity-icon">❤️</span>
+            {% elif friend.activity == 'Yoga' %}
+            <span class="activity-icon">🧘</span>
+            {% elif friend.activity == 'Swimming' %}
+            <span class="activity-icon">🏊‍♂️</span>
+            {% elif friend.activity == 'Cycling' %}
+            <span class="activity-icon">🚴‍♀️</span>
+            {% elif friend.activity == 'Mixed' %}
+            <span class="activity-icon">🔄</span>
             {% else %}
-              <p>
-                {% if friends[0].activity == 'Strength Training' %}
-                  <span class="activity-icon">🏋️</span>
-                {% elif friends[0].activity == 'Running' %}
-                  <span class="activity-icon">🏃‍♂️</span>
-                {% elif friends[0].activity == 'Cardio' %}
-                  <span class="activity-icon">❤️</span>
-                {% elif friends[0].activity == 'Yoga' %}
-                  <span class="activity-icon">🧘</span>
-                {% elif friends[0].activity == 'Swimming' %}
-                  <span class="activity-icon">🏊‍♂️</span>
-                {% elif friends[0].activity == 'Cycling' %}
-                  <span class="activity-icon">🚴‍♀️</span>
-                {% elif friends[0].activity == 'Mixed' %}
-                  <span class="activity-icon">🔄</span>
-                {% else %}
-                  <span class="activity-icon">💪</span>
-                {% endif %}
-                
-                Burned <strong>{{ friends[0].calories }} kcal</strong> in <strong>{{ friends[0].duration }} minutes</strong> 
-                doing {{ friends[0].activity }}.
-              </p>
-              
-              {% if friends[0].shared_days_ago is not none %}
-                <p><small class="text-muted">
-                  {% if friends[0].shared_days_ago == 0 %}
-                    Shared today
-                  {% elif friends[0].shared_days_ago == 1 %}
-                    Shared yesterday
-                  {% else %}
-                    Shared {{ friends[0].shared_days_ago }} days ago
-                  {% endif %}
-                </small></p>
-              {% endif %}
+            <span class="activity-icon">💪</span>
             {% endif %}
-            
-            <div class="text-center mt-3">
-              <p>You'll see how you compare once you add friends. Use the search above to find friends!</p>
-            </div>
+
+            Burned <strong>{{ friend.calories }} kcal</strong> in <strong>{{ friend.duration }} minutes</strong>
+            doing {{ friend.activity }}.
+          </p>
+
+          {% if friend.shared_days_ago is not none %}
+          <p><small class="text-muted">
+              {% if friend.shared_days_ago == 0 %}
+              Shared today
+              {% elif friend.shared_days_ago == 1 %}
+              Shared yesterday
+              {% else %}
+              Shared {{ friend.shared_days_ago }} days ago
+              {% endif %}
+            </small></p>
+          {% endif %}
+          {% endif %}
+        </div>
+        {% endfor %}
+        {% elif has_friends %}
+        <div class="text-center p-4">
+          <p>You haven't added any friends yet. Use the search above to find friends!</p>
+        </div>
+        {% else %}
+        <div class="friend-card current-user-card">
+          <div class="rank-badge user-badge">1</div>
+          <div class="friend-name">{{ user.username }} (You)</div>
+
+          {% if friends[0].activity == 'No recent activity' %}
+          <p><span class="activity-icon">⏳</span> No workout activity recorded yet.</p>
+          {% else %}
+          <p>
+            {% if friends[0].activity == 'Strength Training' %}
+            <span class="activity-icon">🏋️</span>
+            {% elif friends[0].activity == 'Running' %}
+            <span class="activity-icon">🏃‍♂️</span>
+            {% elif friends[0].activity == 'Cardio' %}
+            <span class="activity-icon">❤️</span>
+            {% elif friends[0].activity == 'Yoga' %}
+            <span class="activity-icon">🧘</span>
+            {% elif friends[0].activity == 'Swimming' %}
+            <span class="activity-icon">🏊‍♂️</span>
+            {% elif friends[0].activity == 'Cycling' %}
+            <span class="activity-icon">🚴‍♀️</span>
+            {% elif friends[0].activity == 'Mixed' %}
+            <span class="activity-icon">🔄</span>
+            {% else %}
+            <span class="activity-icon">💪</span>
+            {% endif %}
+
+            Burned <strong>{{ friends[0].calories }} kcal</strong> in <strong>{{ friends[0].duration }} minutes</strong>
+            doing {{ friends[0].activity }}.
+          </p>
+
+          {% if friends[0].shared_days_ago is not none %}
+          <p><small class="text-muted">
+              {% if friends[0].shared_days_ago == 0 %}
+              Shared today
+              {% elif friends[0].shared_days_ago == 1 %}
+              Shared yesterday
+              {% else %}
+              Shared {{ friends[0].shared_days_ago }} days ago
+              {% endif %}
+            </small></p>
+          {% endif %}
+          {% endif %}
+
+          <div class="text-center mt-3">
+            <p>You'll see how you compare once you add friends. Use the search above to find friends!</p>
           </div>
+        </div>
         {% endif %}
       </div>
     </section>

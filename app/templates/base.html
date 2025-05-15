@@ -25,6 +25,32 @@
     </header>
     {% endblock %}
 
+    <!--flash msg section-->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                <span class="flash-icon">
+                {% if category == 'success' %}
+                    <i class="fas fa-check-circle"></i>
+                {% elif category == 'error' or category == 'danger' %}
+                    <i class="fas fa-exclamation-circle"></i>
+                {% elif category == 'warning' %}
+                    <i class="fas fa-exclamation-triangle"></i>
+                {% else %}
+                    <i class="fas fa-info-circle"></i>
+                {% endif %}
+                </span>
+                <span class="flash-text">{{ message }}</span>
+                <span class="flash-close" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    <!--end section-->
+
     <main>
         {% block content %}{% endblock %}
     </main>
