@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
                   </div>
                   <div>
                     ${user.is_friend ? 
-                      `<button class="remove-btn" data-username="${user.username}">Remove Friend</button>` : 
+                      `<span class="friend-badge">Already Friends</span>` : 
                       `<button class="add-btn" data-username="${user.username}">Add Friend</button>`
                     }
                   </div>
@@ -51,9 +51,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.addEventListener('click', addFriend);
               });
               
-              document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', removeFriend);
-              });
             } else {
               searchResults.innerHTML = '<p class="text-center">No users found</p>';
             }
@@ -90,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (leaderboardContainer && currentLeaderboardContainer) {
               currentLeaderboardContainer.innerHTML = leaderboardContainer.innerHTML;
+              attachRemoveListeners();
             }
           }
         })
@@ -155,4 +153,13 @@ document.addEventListener('DOMContentLoaded', function() {
           alert('Error removing friend. Please try again.');
         });
     }
+
+    // Function to attach event listeners to remove buttons in the leaderboard
+    function attachRemoveListeners() {
+      document.querySelectorAll('.friend-card .remove-btn').forEach(btn => {
+        btn.addEventListener('click', removeFriend);
+      });
+    }
+
+    attachRemoveListeners();
   });
