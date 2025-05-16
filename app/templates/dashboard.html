@@ -33,19 +33,13 @@
         <i class="fas fa-calendar-alt"></i> <span>Workout Plan</span>
       </a>
       <a href="#" class="menu-item" data-target="workout-details-section">
-        <i class="fas fa-calendar-alt"></i> <span>Workout Details</span>
+        <i class="fas fa-calendar-alt"></i> <span>Add Workout</span>
       </a>
       <a href="#" class="menu-item" data-target="workout-statistic-section">
         <i class="fas fa-chart-line"></i> <span>Workout Statistics</span>
       </a>
-      <a href="#" class="menu-item" data-target="schedule-section">
-        <i class="fas fa-calendar-week"></i> <span>Schedule</span>
-      </a>
       <a href="#" class="menu-item" data-target="share-section">
         <i class="fas fa-share-alt"></i> <span>Share Data</span>
-      </a>
-      <a href="#" class="menu-item settings-btn" data-target="settings-section">
-        <i class="fas fa-user-circle fa-lg"></i> <span>Settings</span>
       </a>
       <a href="{{ url_for('main.logout') }}" class="menu-item logout-btn">
         <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
@@ -76,15 +70,7 @@
             <p>{{ total_calories }}</p>
           </div>
         </div>
-        <div class="stats-card">
-          <div class="stats-icon green">
-            <i class="fas fa-running"></i>
-          </div>
-          <div class="stats-info">
-            <h3>Distance Covered</h3>
-            <p>{{ distance_km }} km</p>
-          </div>
-        </div>
+    
         <div class="stats-card">
           <div class="stats-icon red">
             <i class="fas fa-stopwatch"></i>

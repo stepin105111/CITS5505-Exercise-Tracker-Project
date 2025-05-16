@@ -7,7 +7,7 @@ from wtforms import (
     SelectField,
     TextAreaField,
     IntegerField,
-    DateField
+    DateField,
 )
 from wtforms.validators import (
     DataRequired,
@@ -36,6 +36,7 @@ class RegisterForm(FlaskForm):
     secret_question = SelectField(
         "Secret Question",
         choices=[
+            ("", "-- Select a Secret Question --"),
             ("first_pet", "What was the name of your first pet?"),
             ("birth_city", "In what city were you born?"),
             ("mother_maiden", "What is your mother's maiden name?"),
@@ -116,9 +117,14 @@ class SecurityAnswerForm(FlaskForm):
 
 class ResetPasswordForm(FlaskForm):
     username = StringField("Username")  # Hidden field passed through template
-    new_password = PasswordField("New Password", validators=[DataRequired(), Length(min=6)])
-    confirm_password = PasswordField("Confirm Password", validators=[
-        DataRequired(),
-        EqualTo('new_password', message="Passwords must match")
-    ])
+    new_password = PasswordField(
+        "New Password", validators=[DataRequired(), Length(min=6)]
+    )
+    confirm_password = PasswordField(
+        "Confirm Password",
+        validators=[
+            DataRequired(),
+            EqualTo("new_password", message="Passwords must match"),
+        ],
+    )
     submit = SubmitField("Reset Password")
