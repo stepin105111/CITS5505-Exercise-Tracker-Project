@@ -101,3 +101,24 @@ class WorkoutLogForm(FlaskForm):
     start_date = DateField("Start Date", validators=[Optional()])
     workout_days = StringField("Workout Days", validators=[Optional()])
     submit = SubmitField("Create Workout")
+
+
+class ForgotUsernameForm(FlaskForm):
+    username = StringField("Username", validators=[DataRequired()])
+    submit = SubmitField("Find Account")
+
+
+class SecurityAnswerForm(FlaskForm):
+    username = StringField("Username")  # Hidden field passed through template
+    answer = StringField("Answer", validators=[DataRequired()])
+    submit = SubmitField("Verify Answer")
+
+
+class ResetPasswordForm(FlaskForm):
+    username = StringField("Username")  # Hidden field passed through template
+    new_password = PasswordField("New Password", validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField("Confirm Password", validators=[
+        DataRequired(),
+        EqualTo('new_password', message="Passwords must match")
+    ])
+    submit = SubmitField("Reset Password")
