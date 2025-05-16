@@ -18,11 +18,11 @@
 
             <div class="input-group">
                 <i class="fas fa-user"></i>
-                {{ form.username(placeholder="Username", type="text", class="username-input") }}
+                {{ form.username(placeholder="Username", type="text", class="username-input", id="username") }}
             </div>
 
             <div class="input-group">
-                {{ form.email(placeholder="Email", type="text", class="email-input") }}
+                {{ form.email(placeholder="Email", type="text", class="email-input", id="email") }}
             </div>
 
             <div class="input-group">
@@ -44,19 +44,19 @@
             </div>
 
             <div class="input-group">
-                {{ form.secret_question(class="form-control") }}
+                {{ form.secret_question(class="form-control",id="secret_question") }}
             </div>
 
             <div class="input-group">
-                {{ form.secret_answer(class="form-control") }}
+                {{ form.secret_answer(class="form-control", id="secret_answer") }}
             </div>
 
             <div class="terms">
-                {{ form.terms() }}
+                {{ form.terms(id="terms") }}
                 {{ form.terms.label }}
             </div>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" id="submit_btn">
                 <i class="fas fa-sign-in-alt"></i> {{ form.submit.label.text }}
             </button>
         </form>
