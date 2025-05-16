@@ -79,7 +79,7 @@ CITS5505-Exercise-Tracker-Project/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-org/fitness-tracker.git
+git clone https://github.com/FernandezAneena/CITS5505-Exercise-Tracker-Project.git
 cd fitness-tracker
 
 # 2. Create and activate a virtual environment
