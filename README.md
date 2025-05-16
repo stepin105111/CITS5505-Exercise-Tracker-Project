@@ -18,14 +18,16 @@ This Fitness Tracker is a web application developed as part of the CITS5505 Agil
 
 ---
 
-## Team Members
+### **Team Members**
 
-- Aneena Fernandez       - 24302141  
-- Naishadh Kumar Vashik  - 24455506
-- Winky Loong            - 24037833 
-- Zaid Sayed             - 23882963 
+| Name                  | GitHub Username     | Student ID |
+|-----------------------|---------------------|------------|
+| Aneena Fernandez      | `FernandezAneena`   | 24302141   |
+| Naishadh Kumar Vashik | `NaishadhKV`        | 24455506   |
+| Winky Loong           | `wkk23`             | 24037833   |
+| Zaid Sayed            | `zaidsayed`         | 23882963   |
 
----
+
 
 ## Tech Stack
 
@@ -77,40 +79,45 @@ CITS5505-Exercise-Tracker-Project/
 
 ## Setup Instructions
 
-```bash
+
 # 1. Clone the repository
 git clone https://github.com/FernandezAneena/CITS5505-Exercise-Tracker-Project.git
 cd fitness-tracker
 
 # 2. Create and activate a virtual environment
+
+```bash
 python3 -m venv env
 source env/bin/activate          # On Windows: env\Scripts\activate
+```
 
 # 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
 
 # 4. Set Flask app and initialize database
+
+```bash
 export FLASK_APP=projectsignup.py     # Windows CMD: set FLASK_APP=projectsignup.py
 flask init-db
+```
 
 # 5. Run the application
-python project-signup.py
+
+```bash
+python project-signup.py 
 ```
 
 ---
 
 ## Testing
 
-### Unit Tests
+### Unit Tests && Selenium Tests
 
 ```bash
 python -m unittest discover -s tests -v  
-```
-
-### Selenium Tests (Headless)
-
-```bash
-python -m unittest tests/test_selenium_register.py  
 ```
 
 ---
