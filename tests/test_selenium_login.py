@@ -1,11 +1,3 @@
-def run_test_server():
-    from app import create_application
-    from app.config import TestingConfig
-
-    app = create_application(TestingConfig)
-    app.run(debug=False, use_reloader=False)
-
-
 import unittest
 import multiprocessing
 import time
@@ -14,6 +6,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
+
 from app.extensions import db
 from app.database import User
 from app import create_application
@@ -21,7 +14,10 @@ from app.config import TestingConfig
 
 localHost = "http://127.0.0.1:5000"
 
-
+def run_test_server():
+    app = create_application(TestingConfig)
+    app.run(debug=False, use_reloader=False)
+    
 class SeleniumLoginTest(unittest.TestCase):
 
     def setUp(self):
