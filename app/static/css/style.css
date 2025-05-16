@@ -434,3 +434,66 @@ a:hover {
     opacity: 1;
   }
 }
+
+
+/* Ensure header stays on top */
+.page-header {
+  position: relative;
+  z-index: 10;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.page-header a {
+  color: white;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: bold;
+}
+
+.page-header a:hover {
+  text-decoration: underline;
+}
+
+/* Full-page background */
+.landing-hero {
+  background-image: url('../images/fitness-hero.jpg'); /* Use your image path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+/* Optional dark overlay */
+.overlay {
+  background-color: rgba(0, 0, 0, 0.6);
+  width: 100%;
+  height: 100%;
+  padding: 100px 30px 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-text {
+  text-align: center;
+  color: white;
+  max-width: 700px;
+}
+
+.hero-text h2 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.hero-text p {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+}
