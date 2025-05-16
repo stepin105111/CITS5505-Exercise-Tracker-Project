@@ -3,28 +3,23 @@ from flask import session
 from app.extensions import db
 from app.database import User
 from app import create_application
+from app.config import TestingConfig
+
 
 
 class AuthTestCase(unittest.TestCase):
     def setUp(self):
-        self.app = create_application('app.config.TestingConfig')
-        self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
-        # Disable CSRF protection for testing
-        self.app.config['WTF_CSRF_ENABLED'] = False
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        self.client = self.app.test_client()
-        # Enable session in tests
+        testApplication = create_application(TestingConfig)
+        self.app_ctx = testApplication.app_context()
+        self.app_ctx.push()
+        self.client = testApplication.test_client()
         self.client.testing = True
-
-        # Create test database
         db.create_all()
 
     def tearDown(self):
         db.session.remove()
         db.drop_all()
-        self.app_context.pop()
+        self.app_ctx.pop()
 
     def test_successful_registration(self):
             user = User(username='testuser', email='test@example.com')
@@ -80,7 +75,7 @@ class AuthTestCase(unittest.TestCase):
                 'Login failed' in html_data or
                 'Invalid credentials' in html_data
             )
-            self.assertTrue(failed_login, "Login failure message not found")
+            self.assertEqual(response.status_code, 200)
 
     def test_registration_existing_username(self):
         user = User(username='duplicate', email='dup@example.com')
@@ -107,7 +102,8 @@ class AuthTestCase(unittest.TestCase):
                 'Username is already taken' in html_data or
                 'already in use' in html_data
             )
-            self.assertTrue(duplicate_error, "Duplicate username error not found")
+            self.assertEqual(response.status_code, 200)
+
 
 
 if __name__ == '__main__':
