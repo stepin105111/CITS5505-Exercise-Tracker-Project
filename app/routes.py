@@ -262,8 +262,7 @@ def dashboard():
             workout_days_set.update(days)
 
     total_workout_days = len(workout_days_set)
-    distance_km = 11.5
-
+    
     # Visualisation logic -----------------------------------
 
     # 🟦 Pie chart data calculation
@@ -408,7 +407,6 @@ def dashboard():
         total_duration=total_duration,
         total_calories=total_calories,
         total_workout_days=total_workout_days,
-        distance_km=distance_km,
         workout_types=workout_types,
         workout_counts=workout_counts,
         weekday_labels=sorted_weekdays,
