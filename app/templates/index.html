@@ -7,8 +7,13 @@
 {% endblock %}
 
 {% block content %}
-<section class="hero">
+<section class="landing-hero">
+  <div class="overlay">
+    <div class="hero-text">
       <h2>Track. Analyze. Improve.</h2>
       <p>Your fitness journey starts here. Log your workouts, track progress, and stay motivated!</p>
+      <a href="{{ url_for('main.register') }}" class="cta-button">Get Started</a>
+    </div>
+  </div>
 </section>
 {% endblock %}
