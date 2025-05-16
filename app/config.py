@@ -5,6 +5,7 @@ default_database_uri = 'sqlite:///' + os.path.join(basedir, 'dbase.db')
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev_key'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///dbase.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class DeploymentConfig(Config):
