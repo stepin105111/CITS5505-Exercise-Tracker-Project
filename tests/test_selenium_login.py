@@ -39,6 +39,7 @@ class SeleniumLoginTest(unittest.TestCase):
 
         # Launch  browser
         options = webdriver.ChromeOptions()
+       # options.add_argument("--headless=new")
         self.driver = webdriver.Chrome(options=options)
 
         return super().setUp()

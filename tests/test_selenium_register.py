@@ -40,6 +40,7 @@ class SeleniumRegisterTest(unittest.TestCase):
 
         # Start browser
         options = webdriver.ChromeOptions()
+        # options.add_argument("--headless=new")
         self.driver = webdriver.Chrome(options=options)
 
     def tearDown(self):
